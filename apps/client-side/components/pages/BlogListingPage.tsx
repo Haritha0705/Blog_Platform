@@ -5,7 +5,7 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import Image from "next/image";
 
 interface BlogListingPageProps {
   setCurrentPage: (page: string) => void;
@@ -169,7 +169,7 @@ export function BlogListingPage({ setCurrentPage, setSelectedPost }: BlogListing
                     onClick={() => handlePostClick(post.id)}
                   >
                     <div className="aspect-[16/10] overflow-hidden">
-                      <ImageWithFallback
+                      <Image
                         src={post.image}
                         alt={post.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -210,7 +210,7 @@ export function BlogListingPage({ setCurrentPage, setSelectedPost }: BlogListing
                   >
                     <div className="flex flex-col sm:flex-row gap-6 p-6">
                       <div className="w-full sm:w-48 aspect-[16/10] sm:aspect-square overflow-hidden rounded-lg flex-shrink-0">
-                        <ImageWithFallback
+                        <Image
                           src={post.image}
                           alt={post.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

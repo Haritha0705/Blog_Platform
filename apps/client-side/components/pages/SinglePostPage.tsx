@@ -5,7 +5,7 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Avatar } from '../ui/avatar';
 import { Textarea } from '../ui/textarea';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import Image from "next/image";
 
 interface SinglePostPageProps {
   setCurrentPage: (page: string) => void;
@@ -116,7 +116,7 @@ export function SinglePostPage({ setCurrentPage, postId }: SinglePostPageProps) 
               <div className="flex items-center gap-6 mb-6">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-12 w-12">
-                    <ImageWithFallback
+                    <Image
                       src={post.author.avatar}
                       alt={post.author.name}
                       className="w-full h-full object-cover"
@@ -168,7 +168,7 @@ export function SinglePostPage({ setCurrentPage, postId }: SinglePostPageProps) 
 
             {/* Featured Image */}
             <div className="mb-12 rounded-xl overflow-hidden">
-              <ImageWithFallback
+              <Image
                 src={post.image}
                 alt={post.title}
                 className="w-full aspect-[16/9] object-cover"
@@ -259,7 +259,7 @@ function App() {
             <Card className="p-6 mt-12 bg-muted/50">
               <div className="flex gap-4">
                 <Avatar className="h-16 w-16 flex-shrink-0">
-                  <ImageWithFallback
+                  <Image
                     src={post.author.avatar}
                     alt={post.author.name}
                     className="w-full h-full object-cover"
@@ -289,7 +289,7 @@ function App() {
                     onClick={() => setCurrentPage('post')}
                   >
                     <div className="aspect-video overflow-hidden">
-                      <ImageWithFallback
+                      <Image
                         src={relatedPost.image}
                         alt={relatedPost.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -328,7 +328,7 @@ function App() {
                     <Card className="p-6">
                       <div className="flex gap-4">
                         <Avatar className="h-10 w-10 flex-shrink-0">
-                          <ImageWithFallback
+                          <Image
                             src={comment.avatar}
                             alt={comment.author}
                             className="w-full h-full object-cover"
@@ -361,7 +361,7 @@ function App() {
                           <Card key={reply.id} className="p-6 bg-muted/30">
                             <div className="flex gap-4">
                               <Avatar className="h-10 w-10 flex-shrink-0">
-                                <ImageWithFallback
+                                <Image
                                   src={reply.avatar}
                                   alt={reply.author}
                                   className="w-full h-full object-cover"

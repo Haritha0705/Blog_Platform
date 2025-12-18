@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { Input } from '../ui/input';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import Image from "next/image";
 
 interface HomePageProps {
   setCurrentPage: (page: string) => void;
@@ -142,11 +142,13 @@ export function HomePage({ setCurrentPage, setSelectedPost }: HomePageProps) {
             </div>
             <div className="relative">
               <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
-                <ImageWithFallback
-                  src={featuredPost.image}
-                  alt={featuredPost.title}
-                  className="w-full h-full object-cover"
-                />
+                  <Image
+                      src={featuredPost.image}
+                      alt={featuredPost.title}
+                      fill
+                      style={{ objectFit: "cover" }}
+                      className="w-full h-full"
+                  />
               </div>
             </div>
           </div>
@@ -171,11 +173,13 @@ export function HomePage({ setCurrentPage, setSelectedPost }: HomePageProps) {
                 onClick={() => handlePostClick(post.id)}
               >
                 <div className="aspect-[16/10] overflow-hidden">
-                  <ImageWithFallback
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                    {/*<Image*/}
+                    {/*    src={post.image}*/}
+                    {/*    alt={post.title}*/}
+                    {/*    fill*/}
+                    {/*    style={{ objectFit: "cover" }}*/}
+                    {/*    className="group-hover:scale-105 transition-transform duration-300"*/}
+                    {/*/>*/}
                 </div>
                 <div className="p-6 space-y-3">
                   <Badge variant="secondary">{post.category}</Badge>

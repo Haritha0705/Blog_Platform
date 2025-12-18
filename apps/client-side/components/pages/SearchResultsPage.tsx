@@ -5,7 +5,7 @@ import { Button } from '../ui/button';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import Image from "next/image";
 
 interface SearchResultsPageProps {
   setCurrentPage: (page: string) => void;
@@ -135,7 +135,7 @@ export function SearchResultsPage({ setCurrentPage, setSelectedPost, searchQuery
               >
                 <div className="flex flex-col sm:flex-row gap-6 p-6">
                   <div className="w-full sm:w-48 aspect-video sm:aspect-square overflow-hidden rounded-lg flex-shrink-0">
-                    <ImageWithFallback
+                    <Image
                       src={result.image}
                       alt={result.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

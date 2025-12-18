@@ -5,7 +5,7 @@ import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Avatar } from '../ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import Image from "next/image";
 
 interface AuthorPageProps {
   setCurrentPage: (page: string) => void;
@@ -89,7 +89,7 @@ export function AuthorPage({ setCurrentPage, setSelectedPost }: AuthorPageProps)
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="flex flex-col md:flex-row gap-8 items-start">
             <Avatar className="h-32 w-32 border-4 border-background shadow-lg">
-              <ImageWithFallback
+              <Image
                 src={author.avatar}
                 alt={author.name}
                 className="w-full h-full object-cover"
@@ -173,7 +173,7 @@ export function AuthorPage({ setCurrentPage, setSelectedPost }: AuthorPageProps)
                   onClick={() => handlePostClick(post.id)}
                 >
                   <div className="aspect-video overflow-hidden">
-                    <ImageWithFallback
+                    <Image
                       src={post.image}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

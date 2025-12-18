@@ -8,7 +8,7 @@ import { Switch } from '../ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Avatar } from '../ui/avatar';
 import { Separator } from '../ui/separator';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import Image from "next/image";
 import {Badge} from "@/components/ui/badge";
 
 interface SettingsPageProps {
@@ -49,9 +49,10 @@ export function SettingsPage({ setCurrentPage }: SettingsPageProps) {
                   <label className="block text-sm font-medium mb-4">Profile Picture</label>
                   <div className="flex items-center gap-6">
                     <Avatar className="h-24 w-24">
-                      <ImageWithFallback
+                      <Image
                         src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=200"
                         alt="Profile"
+                        fill
                         className="w-full h-full object-cover"
                       />
                     </Avatar>
