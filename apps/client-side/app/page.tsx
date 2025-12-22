@@ -1,42 +1,42 @@
-"use client";
+'use client';
 
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
-import { HomePage } from '@/components/pages/HomePage';
-import { BlogListingPage } from '@/components/pages/BlogListingPage';
-import { SinglePostPage } from '@/components/pages/SinglePostPage';
-import { LoginPage } from '@/components/pages/LoginPage';
-import { DashboardPage } from '@/components/pages/DashboardPage';
-import { EditorPage } from '@/components/pages/EditorPage';
-import { MyPostsPage } from '@/components/pages/MyPostsPage';
-import { SettingsPage } from '@/components/pages/SettingsPage';
-import { AuthorPage } from '@/components/pages/AuthorPage';
-import { SearchResultsPage } from '@/components/pages/SearchResultsPage';
+import { useState, useEffect } from 'react';
+import { Box, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Toaster } from '@/components/ui/sonner';
-import { useState, useEffect } from "react";
+import {Header} from '@/components/Header';
+import {Footer} from '@/components/Footer';
+import HomePage from '@/components/pages/HomePage';
+import {BlogListingPage} from '@/components/pages/BlogListingPage';
+import SinglePostPage from '@/components/pages/SinglePostPage';
+import LoginPage from '@/components/pages/LoginPage';
+import { DashboardPage } from '@/components/pages/DashboardPage';
+import {EditorPage} from '@/components/pages/EditorPage';
+import MyPostsPage from '@/components/pages/MyPostsPage';
+import SettingsPage from '@/components/pages/SettingsPage';
+import {AuthorPage} from '@/components/pages/AuthorPage';
+import  SearchResultsPage from '@/components/pages/SearchResultsPage';
 
 export default function App() {
     const [darkMode, setDarkMode] = useState(false);
-    const [currentPage, setCurrentPage] = useState('home');
+    const [currentPage, setCurrentPage] = useState<string>('home');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState<string>('');
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
-    useEffect(() => {
-        if (darkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    }, [darkMode]);
+    // MUI Theme
+    const theme = createTheme({
+        palette: {
+            mode: darkMode ? 'dark' : 'light',
+            primary: {
+                main: '#1976d2',
+            },
+        },
+    });
 
-    const toggleDarkMode = () => {
-        setDarkMode(!darkMode);
-    };
+    const toggleDarkMode = () => setDarkMode(!darkMode);
 
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-    };
+    const handleSearch = (query: string) => setSearchQuery(query);
 
     const renderPage = () => {
         switch (currentPage) {
@@ -66,21 +66,34 @@ export default function App() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col">
-            <Header
-                darkMode={darkMode}
-                toggleDarkMode={toggleDarkMode}
-                currentPage={currentPage}
-                setCurrentPage={setCurrentPage}
-                isAuthenticated={isAuthenticated}
-                setIsAuthenticated={setIsAuthenticated}
-                onSearch={handleSearch}
-            />
-            <main className="flex-1">
-                {renderPage()}
-            </main>
-            <Footer />
-            <Toaster />
-        </div>
+        <ThemeProvider theme={theme}>
+            <CssBaseline />
+            <Box display="flex" flexDirection="column" minHeight="100vh">
+                <Header
+                    darkMode={darkMode}
+                    toggleDarkMode={toggleDarkMode}
+                    currentPage={currentPage}
+                    setCurrentPage={setCurrentPage}
+                    isAuthenticated={isAuthenticated}
+                    setIsAuthenticated={setIsAuthenticated}
+                    onSearch={handleSearch}
+                />
+                <Box component="main" flex="1">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentPage + selectedPostId}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {renderPage()}
+                        </motion.div>
+                    </AnimatePresence>
+                </Box>
+                <Footer />
+                <Toaster />
+            </Box>
+        </ThemeProvider>
     );
 }

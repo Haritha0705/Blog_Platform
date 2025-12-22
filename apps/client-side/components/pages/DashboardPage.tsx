@@ -1,254 +1,288 @@
+'use client';
+
 import React from 'react';
-import { TrendingUp, Eye, MessageSquare, Heart, FileText, Clock, Calendar } from 'lucide-react';
-import { Card } from '../ui/card';
-import { Button } from '../ui/button';
-import { Badge } from '../ui/badge';
+import { motion } from 'framer-motion';
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Chip,
+  Stack,
+  Divider,
+} from '@mui/material';
+
+import {
+  TrendingUp,
+  Visibility,
+  Comment,
+  Favorite,
+  Description,
+  Schedule,
+  CalendarMonth,
+} from '@mui/icons-material';
+
+import { stats, recentPosts, notifications } from '@/data/content';
 
 interface DashboardPageProps {
   setCurrentPage: (page: string) => void;
 }
 
+const MotionCard = motion(Card);
+
 export function DashboardPage({ setCurrentPage }: DashboardPageProps) {
-  const stats = [
-    {
-      label: 'Total Views',
-      value: '24.5K',
-      change: '+12.5%',
-      icon: Eye,
-      trend: 'up'
-    },
-    {
-      label: 'Published Posts',
-      value: '18',
-      change: '+2',
-      icon: FileText,
-      trend: 'up'
-    },
-    {
-      label: 'Total Comments',
-      value: '342',
-      change: '+28',
-      icon: MessageSquare,
-      trend: 'up'
-    },
-    {
-      label: 'Total Likes',
-      value: '1.2K',
-      change: '+156',
-      icon: Heart,
-      trend: 'up'
-    }
-  ];
-
-  const recentPosts = [
-    {
-      id: '1',
-      title: 'The Future of Web Development',
-      status: 'published',
-      date: 'Nov 28, 2025',
-      views: '3.2K',
-      comments: 24,
-      likes: 156
-    },
-    {
-      id: '2',
-      title: 'Building Scalable React Applications',
-      status: 'published',
-      date: 'Nov 25, 2025',
-      views: '2.8K',
-      comments: 18,
-      likes: 142
-    },
-    {
-      id: '3',
-      title: 'Design Systems Guide',
-      status: 'draft',
-      date: 'Nov 24, 2025',
-      views: '0',
-      comments: 0,
-      likes: 0
-    }
-  ];
-
-  const notifications = [
-    {
-      id: '1',
-      type: 'comment',
-      message: 'Michael Chen commented on your post',
-      post: 'The Future of Web Development',
-      time: '2 hours ago'
-    },
-    {
-      id: '2',
-      type: 'like',
-      message: '24 people liked your post',
-      post: 'Building Scalable React Applications',
-      time: '5 hours ago'
-    },
-    {
-      id: '3',
-      type: 'milestone',
-      message: 'Your post reached 3K views!',
-      post: 'The Future of Web Development',
-      time: '1 day ago'
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back! Here's an overview of your content.</p>
-        </div>
+      <Box minHeight="100vh" bgcolor="grey.100">
+        <Container maxWidth="lg" sx={{ py: 6 }}>
+          {/* ================= HEADER ================= */}
+          <Box mb={4}>
+            <Typography variant="h4" fontWeight="bold" mb={1}>
+              Dashboard
+            </Typography>
+            <Typography color="text.secondary">
+              Welcome back! Here’s an overview of your content.
+            </Typography>
+          </Box>
 
-        {/* Stats Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {stats.map((stat) => (
-            <Card key={stat.label} className="p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-lg ${
-                  stat.label === 'Total Views' ? 'bg-primary/10 text-primary' :
-                  stat.label === 'Published Posts' ? 'bg-secondary/10 text-secondary' :
-                  stat.label === 'Total Comments' ? 'bg-chart-3/10 text-chart-3' :
-                  'bg-chart-5/10 text-chart-5'
-                }`}>
-                  <stat.icon className="h-5 w-5" />
-                </div>
-                <Badge variant="secondary" className="text-xs">
-                  {stat.change}
-                </Badge>
-              </div>
-              <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-              <p className="text-2xl font-bold">{stat.value}</p>
-            </Card>
-          ))}
-        </div>
+          {/* ================= STATS ================= */}
+          <Box
+              display="grid"
+              gridTemplateColumns={{ xs: '1fr', sm: '1fr 1fr', lg: 'repeat(4, 1fr)' }}
+              gap={3}
+              mb={6}
+          >
+            {stats.map((stat) => (
+                <Card key={stat.label}>
+                  <CardContent>
+                    <Stack direction="row" justifyContent="space-between" mb={2}>
+                      <Box
+                          sx={{
+                            p: 1.5,
+                            borderRadius: 2,
+                            bgcolor:
+                                stat.label === 'Total Views'
+                                    ? 'primary.light'
+                                    : stat.label === 'Published Posts'
+                                        ? 'secondary.light'
+                                        : stat.label === 'Total Comments'
+                                            ? 'success.light'
+                                            : 'warning.light',
+                          }}
+                      >
+                        <stat.icon fontSize="small" />
+                      </Box>
+                      <Chip size="small" label={stat.change} />
+                    </Stack>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* Recent Posts */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold">Recent Posts</h2>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => setCurrentPage('my-posts')}
-              >
-                View All
-              </Button>
-            </div>
-
-            <div className="space-y-4">
-              {recentPosts.map((post) => (
-                <Card key={post.id} className="p-6 hover:shadow-md transition-shadow">
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold text-lg">{post.title}</h3>
-                        <Badge variant={post.status === 'published' ? 'default' : 'secondary'}>
-                          {post.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground flex items-center gap-2">
-                        <Calendar className="h-3 w-3" />
-                        {post.date}
-                      </p>
-                    </div>
-                  </div>
-
-                  {post.status === 'published' && (
-                    <div className="flex items-center gap-6 text-sm text-muted-foreground pt-4 border-t border-border">
-                      <div className="flex items-center gap-2">
-                        <Eye className="h-4 w-4" />
-                        {post.views}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MessageSquare className="h-4 w-4" />
-                        {post.comments}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Heart className="h-4 w-4" />
-                        {post.likes}
-                      </div>
-                    </div>
-                  )}
-
-                  {post.status === 'draft' && (
-                    <div className="pt-4 border-t border-border">
-                      <Button size="sm" variant="outline">Continue Editing</Button>
-                    </div>
-                  )}
+                    <Typography variant="body2" color="text.secondary">
+                      {stat.label}
+                    </Typography>
+                    <Typography variant="h5" fontWeight="bold">
+                      {stat.value}
+                    </Typography>
+                  </CardContent>
                 </Card>
-              ))}
-            </div>
-          </div>
+            ))}
+          </Box>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Quick Actions */}
-            <Card className="p-6">
-              <h3 className="font-semibold mb-4">Quick Actions</h3>
-              <div className="space-y-2">
-                <Button 
-                  className="w-full justify-start gap-2"
-                  onClick={() => setCurrentPage('editor')}
+          {/* ================= MAIN GRID ================= */}
+          <Box display="grid" gridTemplateColumns={{ lg: '2fr 1fr' }} gap={4}>
+            {/* -------- Recent Posts -------- */}
+            <Box>
+              <Stack direction="row" justifyContent="space-between" mb={3}>
+                <Typography variant="h6" fontWeight="bold">
+                  Recent Posts
+                </Typography>
+                <Button
+                    variant="outlined"
+                    size="small"
+                    onClick={() => setCurrentPage('my-posts')}
                 >
-                  <FileText className="h-4 w-4" />
-                  Write New Post
+                  View All
                 </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start gap-2"
-                  onClick={() => setCurrentPage('my-posts')}
-                >
-                  <Clock className="h-4 w-4" />
-                  View Drafts
-                </Button>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start gap-2"
-                  onClick={() => setCurrentPage('settings')}
-                >
-                  <TrendingUp className="h-4 w-4" />
-                  View Analytics
-                </Button>
-              </div>
-            </Card>
+              </Stack>
 
-            {/* Notifications */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Recent Activity</h3>
-                <Badge variant="secondary">{notifications.length}</Badge>
-              </div>
-              <div className="space-y-4">
-                {notifications.map((notification) => (
-                  <div key={notification.id} className="pb-4 border-b border-border last:border-0 last:pb-0">
-                    <p className="text-sm font-medium mb-1">{notification.message}</p>
-                    <p className="text-xs text-muted-foreground mb-1">{notification.post}</p>
-                    <p className="text-xs text-muted-foreground">{notification.time}</p>
-                  </div>
+              <Stack spacing={2}>
+                {recentPosts.map((post) => (
+                    <MotionCard
+                        key={post.id}
+                        whileHover={{ scale: 1.01 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                      <CardContent>
+                        <Stack spacing={2}>
+                          <Stack direction="row" justifyContent="space-between">
+                            <Box>
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <Typography fontWeight="bold">
+                                  {post.title}
+                                </Typography>
+                                <Chip
+                                    size="small"
+                                    label={post.status}
+                                    color={
+                                      post.status === 'published'
+                                          ? 'success'
+                                          : 'default'
+                                    }
+                                />
+                              </Stack>
+                              <Stack
+                                  direction="row"
+                                  spacing={1}
+                                  alignItems="center"
+                                  mt={0.5}
+                              >
+                                <CalendarMonth fontSize="small" />
+                                <Typography variant="caption" color="text.secondary">
+                                  {post.date}
+                                </Typography>
+                              </Stack>
+                            </Box>
+                          </Stack>
+
+                          {post.status === 'published' && (
+                              <>
+                                <Divider />
+                                <Stack direction="row" spacing={3}>
+                                  <StatIcon
+                                      icon={<Visibility fontSize="small" />}
+                                      value={post.comments}
+                                  />
+                                  <StatIcon
+                                      icon={<Comment fontSize="small" />}
+                                      value={post.comments}
+                                  />
+                                  <StatIcon
+                                      icon={<Favorite fontSize="small" />}
+                                      value={post.likes}
+                                  />
+                                </Stack>
+                              </>
+                          )}
+
+                          {post.status === 'draft' && (
+                              <>
+                                <Divider />
+                                <Button size="small" variant="outlined">
+                                  Continue Editing
+                                </Button>
+                              </>
+                          )}
+                        </Stack>
+                      </CardContent>
+                    </MotionCard>
                 ))}
-              </div>
-            </Card>
+              </Stack>
+            </Box>
 
-            {/* Performance Tip */}
-            <Card className="p-6 bg-primary/5 border-primary/20">
-              <div className="flex items-start gap-3">
-                <TrendingUp className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                <div>
-                  <h4 className="font-semibold mb-1">Performance Tip</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Posts with featured images get 3x more engagement. Add one to your drafts!
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </div>
-    </div>
+            {/* -------- SIDEBAR -------- */}
+            <Stack spacing={3}>
+              {/* Quick Actions */}
+              <Card>
+                <CardContent>
+                  <Typography fontWeight="bold" mb={2}>
+                    Quick Actions
+                  </Typography>
+                  <Stack spacing={1}>
+                    <Button
+                        fullWidth
+                        startIcon={<Description />}
+                        onClick={() => setCurrentPage('editor')}
+                    >
+                      Write New Post
+                    </Button>
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        startIcon={<Schedule />}
+                        onClick={() => setCurrentPage('my-posts')}
+                    >
+                      View Drafts
+                    </Button>
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        startIcon={<TrendingUp />}
+                        onClick={() => setCurrentPage('settings')}
+                    >
+                      View Analytics
+                    </Button>
+                  </Stack>
+                </CardContent>
+              </Card>
+
+              {/* Notifications */}
+              <Card>
+                <CardContent>
+                  <Stack direction="row" justifyContent="space-between" mb={2}>
+                    <Typography fontWeight="bold">
+                      Recent Activity
+                    </Typography>
+                    <Chip size="small" label={notifications.length} />
+                  </Stack>
+
+                  <Stack spacing={2}>
+                    {notifications.map((n) => (
+                        <Box key={n.id}>
+                          <Typography variant="body2" fontWeight="medium">
+                            {n.message}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {n.post}
+                          </Typography>
+                          <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              display="block"
+                          >
+                            {n.time}
+                          </Typography>
+                          <Divider sx={{ mt: 1 }} />
+                        </Box>
+                    ))}
+                  </Stack>
+                </CardContent>
+              </Card>
+
+              {/* Performance Tip */}
+              <Card sx={{ bgcolor: 'primary.light' }}>
+                <CardContent>
+                  <Stack direction="row" spacing={2}>
+                    <TrendingUp color="primary" />
+                    <Box>
+                      <Typography fontWeight="bold">
+                        Performance Tip
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Posts with featured images get 3x more engagement. Add one
+                        to your drafts!
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Stack>
+          </Box>
+        </Container>
+      </Box>
+  );
+}
+
+/* ============ SMALL COMPONENT ============ */
+function StatIcon({
+                    icon,
+                    value,
+                  }: {
+  icon: React.ReactNode;
+  value: number;
+}) {
+  return (
+      <Stack direction="row" spacing={1} alignItems="center">
+        {icon}
+        <Typography variant="body2">{value}</Typography>
+      </Stack>
   );
 }

@@ -1,11 +1,29 @@
-import React from 'react';
-import { Search, Filter, Calendar, Clock, FileText } from 'lucide-react';
-import { Input } from '../ui/input';
-import { Button } from '../ui/button';
-import { Card } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import Image from "next/image";
+'use client';
+
+import * as React from 'react';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+
+import {
+  Box,
+  Card,
+  Typography,
+  TextField,
+  Button,
+  Chip,
+  Select,
+  MenuItem,
+  Stack,
+  Divider,
+} from '@mui/material';
+
+import SearchIcon from '@mui/icons-material/Search';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+
+import { results } from '@/data/content';
 
 interface SearchResultsPageProps {
   setCurrentPage: (page: string) => void;
@@ -13,206 +31,269 @@ interface SearchResultsPageProps {
   searchQuery?: string;
 }
 
-export function SearchResultsPage({ setCurrentPage, setSelectedPost, searchQuery: initialQuery = '' }: SearchResultsPageProps) {
-  const [searchQuery, setSearchQuery] = React.useState(initialQuery);
+const MotionCard = motion(Card);
 
-  const results = [
-    {
-      id: '1',
-      title: 'The Future of Web Development: Trends to Watch in 2025',
-      excerpt: 'Explore the cutting-edge technologies and methodologies that are shaping the future of web development.',
-      category: 'Technology',
-      author: 'Sarah Johnson',
-      date: 'Nov 28, 2025',
-      readTime: '8 min',
-      image: 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?w=400'
-    },
-    {
-      id: '2',
-      title: 'Building Scalable React Applications',
-      excerpt: 'Learn the best practices and patterns for creating maintainable React applications at scale.',
-      category: 'Development',
-      author: 'Michael Chen',
-      date: 'Nov 27, 2025',
-      readTime: '6 min',
-      image: 'https://images.unsplash.com/photo-1763568258226-3e3f67a6577e?w=400'
-    },
-    {
-      id: '4',
-      title: 'Mastering TypeScript: Advanced Techniques',
-      excerpt: 'Deep dive into advanced TypeScript features and how to leverage them in your projects.',
-      category: 'Development',
-      author: 'David Wilson',
-      date: 'Nov 25, 2025',
-      readTime: '7 min',
-      image: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=400'
-    }
-  ];
+export default function SearchResultsPage({
+                                            setCurrentPage,
+                                            setSelectedPost,
+                                            searchQuery: initialQuery = '',
+                                          }: SearchResultsPageProps) {
+  const [searchQuery, setSearchQuery] = React.useState(initialQuery);
 
   const handlePostClick = (postId: string) => {
     setSelectedPost?.(postId);
     setCurrentPage('post');
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
   const highlightText = (text: string, query: string) => {
     if (!query) return text;
     const parts = text.split(new RegExp(`(${query})`, 'gi'));
-    return parts.map((part, index) => 
-      part.toLowerCase() === query.toLowerCase() 
-        ? <mark key={index} className="bg-primary/20 text-foreground">{part}</mark>
-        : part
+    return parts.map((part, index) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+            <Box
+                key={index}
+                component="mark"
+                sx={{
+                  bgcolor: 'primary.light',
+                  color: 'text.primary',
+                  px: 0.5,
+                  borderRadius: 0.5,
+                }}
+            >
+              {part}
+            </Box>
+        ) : (
+            part
+        )
     );
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Search Header */}
-        <div className="mb-12">
-          <h1 className="text-3xl font-bold mb-6">Search Results</h1>
-          <form onSubmit={handleSearch} className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              type="search"
-              placeholder="Search articles..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-14 text-lg"
-              autoFocus
-            />
-          </form>
-        </div>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'grey.100', py: 6, px: 2 }}>
+        <Box sx={{ maxWidth: 900, mx: 'auto' }}>
+          {/* Header */}
+          <Box mb={6}>
+            <Typography variant="h4" fontWeight={700} mb={3}>
+              Search Results
+            </Typography>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-8">
-          <Select defaultValue="relevance">
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="relevance">Most Relevant</SelectItem>
-              <SelectItem value="latest">Latest</SelectItem>
-              <SelectItem value="popular">Most Popular</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select defaultValue="all">
-            <SelectTrigger className="w-full sm:w-40">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="technology">Technology</SelectItem>
-              <SelectItem value="development">Development</SelectItem>
-              <SelectItem value="design">Design</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" className="gap-2">
-            <Filter className="h-4 w-4" />
-            More Filters
-          </Button>
-        </div>
+            <Box position="relative">
+              <SearchIcon
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: 14,
+                    transform: 'translateY(-50%)',
+                    color: 'text.secondary',
+                  }}
+              />
+              <TextField
+                  fullWidth
+                  autoFocus
+                  placeholder="Search articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  sx={{
+                    '& input': {
+                      pl: 6,
+                      height: 56,
+                      fontSize: 18,
+                    },
+                  }}
+              />
+            </Box>
+          </Box>
 
-        {/* Results Count */}
-        {searchQuery && (
-          <p className="text-muted-foreground mb-6">
-            Found <span className="font-semibold text-foreground">{results.length}</span> results 
-            for "<span className="font-semibold text-foreground">{searchQuery}</span>"
-          </p>
-        )}
+          {/* Filters */}
+          <Stack
+              direction={{ xs: 'column', sm: 'row' }}
+              spacing={2}
+              mb={4}
+          >
+            <Select defaultValue="relevance" sx={{ width: 180 }}>
+              <MenuItem value="relevance">Most Relevant</MenuItem>
+              <MenuItem value="latest">Latest</MenuItem>
+              <MenuItem value="popular">Most Popular</MenuItem>
+            </Select>
 
-        {/* Results */}
-        {results.length > 0 ? (
-          <div className="space-y-6 mb-12">
-            {results.map((result) => (
-              <Card
-                key={result.id}
-                className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group"
-                onClick={() => handlePostClick(result.id)}
-              >
-                <div className="flex flex-col sm:flex-row gap-6 p-6">
-                  <div className="w-full sm:w-48 aspect-video sm:aspect-square overflow-hidden rounded-lg flex-shrink-0">
-                    <Image
-                      src={result.image}
-                      alt={result.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="flex-1 space-y-3">
-                    <Badge variant="secondary">{result.category}</Badge>
-                    <h3 className="font-semibold text-xl leading-tight group-hover:text-primary transition-colors">
-                      {highlightText(result.title, searchQuery)}
-                    </h3>
-                    <p className="text-muted-foreground line-clamp-2">
-                      {highlightText(result.excerpt, searchQuery)}
-                    </p>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>{result.author}</span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4" />
-                        {result.date}
-                      </span>
-                      <span>•</span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {result.readTime}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+            <Select defaultValue="all" sx={{ width: 180 }}>
+              <MenuItem value="all">All Categories</MenuItem>
+              <MenuItem value="technology">Technology</MenuItem>
+              <MenuItem value="development">Development</MenuItem>
+              <MenuItem value="design">Design</MenuItem>
+            </Select>
+
+            <Button
+                variant="outlined"
+                startIcon={<FilterAltOutlinedIcon />}
+            >
+              More Filters
+            </Button>
+          </Stack>
+
+          {/* Results Count */}
+          {searchQuery && (
+              <Typography color="text.secondary" mb={3}>
+                Found{' '}
+                <strong>{results.length}</strong> results for{' '}
+                <strong>{searchQuery}</strong>
+              </Typography>
+          )}
+
+          {/* Results */}
+          {results.length > 0 ? (
+              <Stack spacing={3} mb={6}>
+                {results.map((result) => (
+                    <MotionCard
+                        key={result.id}
+                        whileHover={{ scale: 1.01 }}
+                        transition={{ duration: 0.2 }}
+                        sx={{ cursor: 'pointer', overflow: 'hidden' }}
+                        onClick={() => handlePostClick(result.id)}
+                    >
+                      <Stack
+                          direction={{ xs: 'column', sm: 'row' }}
+                          spacing={3}
+                          p={3}
+                      >
+                        {/* Image */}
+                        <Box
+                            sx={{
+                              width: { xs: '100%', sm: 200 },
+                              aspectRatio: '16 / 9',
+                              borderRadius: 2,
+                              overflow: 'hidden',
+                              position: 'relative',
+                              flexShrink: 0,
+                            }}
+                        >
+                          <Image
+                              src={result.image}
+                              alt={result.title}
+                              fill
+                              style={{ objectFit: 'cover' }}
+                          />
+                        </Box>
+
+                        {/* Content */}
+                        <Box flex={1}>
+                          <Chip
+                              label={result.category}
+                              size="small"
+                              sx={{ mb: 1 }}
+                          />
+
+                          <Typography
+                              variant="h6"
+                              fontWeight={600}
+                              mb={1}
+                          >
+                            {highlightText(result.title, searchQuery)}
+                          </Typography>
+
+                          <Typography
+                              color="text.secondary"
+                              mb={2}
+                              sx={{
+                                display: '-webkit-box',
+                                WebkitLineClamp: 2,
+                                WebkitBoxOrient: 'vertical',
+                                overflow: 'hidden',
+                              }}
+                          >
+                            {highlightText(result.excerpt, searchQuery)}
+                          </Typography>
+
+                          <Stack
+                              direction="row"
+                              spacing={1.5}
+                              alignItems="center"
+                              color="text.secondary"
+                              fontSize={14}
+                          >
+                            <span>{result.author}</span>
+                            <Divider orientation="vertical" flexItem />
+                            <Stack direction="row" spacing={0.5} alignItems="center">
+                              <CalendarMonthOutlinedIcon fontSize="small" />
+                              <span>{result.date}</span>
+                            </Stack>
+                            <Divider orientation="vertical" flexItem />
+                            <Stack direction="row" spacing={0.5} alignItems="center">
+                              <AccessTimeOutlinedIcon fontSize="small" />
+                              <span>{result.readTime}</span>
+                            </Stack>
+                          </Stack>
+                        </Box>
+                      </Stack>
+                    </MotionCard>
+                ))}
+              </Stack>
+          ) : (
+              /* Empty State */
+              <Card sx={{ p: 6, textAlign: 'center' }}>
+                <DescriptionOutlinedIcon
+                    sx={{ fontSize: 56, color: 'text.secondary', mb: 2 }}
+                />
+                <Typography variant="h6" fontWeight={600} mb={1}>
+                  No results found
+                </Typography>
+                <Typography color="text.secondary" mb={3}>
+                  We couldn&apos;t find any articles matching your search.
+                </Typography>
+
+                <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={2}
+                    justifyContent="center"
+                >
+                  <Button
+                      variant="outlined"
+                      onClick={() => setCurrentPage('blog')}
+                  >
+                    Browse Articles
+                  </Button>
+                  <Button
+                      variant="contained"
+                      onClick={() => setSearchQuery('')}
+                  >
+                    Clear Search
+                  </Button>
+                </Stack>
               </Card>
-            ))}
-          </div>
-        ) : (
-          /* Empty State */
-          <Card className="p-12 text-center">
-            <div className="max-w-md mx-auto">
-              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">No results found</h3>
-              <p className="text-muted-foreground mb-6">
-                We couldn't find any articles matching your search. Try different keywords or browse our categories.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="outline" onClick={() => setCurrentPage('blog')}>
-                  Browse Articles
-                </Button>
-                <Button onClick={() => setSearchQuery('')}>
-                  Clear Search
-                </Button>
-              </div>
-            </div>
-          </Card>
-        )}
+          )}
 
-        {/* Pagination */}
-        {results.length > 0 && (
-          <div className="flex items-center justify-center gap-2">
-            <Button variant="outline" disabled>Previous</Button>
-            <Button variant="secondary">1</Button>
-            <Button variant="outline">2</Button>
-            <Button variant="outline">Next</Button>
-          </div>
-        )}
+          {/* Pagination */}
+          {results.length > 0 && (
+              <Stack
+                  direction="row"
+                  spacing={1}
+                  justifyContent="center"
+                  mt={4}
+              >
+                <Button variant="outlined" disabled>
+                  Previous
+                </Button>
+                <Button variant="contained">1</Button>
+                <Button variant="outlined">2</Button>
+                <Button variant="outlined">Next</Button>
+              </Stack>
+          )}
 
-        {/* Search Tips */}
-        {results.length === 0 && searchQuery && (
-          <Card className="p-6 mt-6">
-            <h4 className="font-semibold mb-3">Search Tips</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>• Check your spelling and try again</li>
-              <li>• Try more general keywords</li>
-              <li>• Try different keywords that mean the same thing</li>
-              <li>• Use fewer keywords to get more results</li>
-            </ul>
-          </Card>
-        )}
-      </div>
-    </div>
+          {/* Search Tips */}
+          {results.length === 0 && searchQuery && (
+              <Card sx={{ p: 4, mt: 4 }}>
+                <Typography fontWeight={600} mb={2}>
+                  Search Tips
+                </Typography>
+                <Typography color="text.secondary">
+                  • Check spelling<br />
+                  • Try broader keywords<br />
+                  • Use fewer keywords<br />
+                  • Try synonyms
+                </Typography>
+              </Card>
+          )}
+        </Box>
+      </Box>
   );
 }
