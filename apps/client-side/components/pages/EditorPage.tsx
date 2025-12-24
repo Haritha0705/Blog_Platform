@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   Box,
@@ -32,6 +31,7 @@ import {
   Send,
   Close,
 } from '@mui/icons-material';
+import {useEffect, useState} from "react";
 
 interface EditorPageProps {
   setCurrentPage: (page: string) => void;
@@ -40,22 +40,22 @@ interface EditorPageProps {
 const MotionCard = motion(Card);
 
 export function EditorPage({ setCurrentPage }: EditorPageProps) {
-  const [title, setTitle] = React.useState('');
-  const [content, setContent] = React.useState('');
-  const [category, setCategory] = React.useState('');
-  const [tags, setTags] = React.useState<string[]>([]);
-  const [tagInput, setTagInput] = React.useState('');
-  const [slug, setSlug] = React.useState('');
-  const [excerpt, setExcerpt] = React.useState('');
-  const [lastSaved, setLastSaved] = React.useState<Date | null>(null);
-  const [wordCount, setWordCount] = React.useState(0);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [category, setCategory] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState('');
+  const [slug, setSlug] = useState('');
+  const [excerpt, setExcerpt] = useState('');
+  const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const [wordCount, setWordCount] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const words = content.trim().split(/\s+/).filter(Boolean);
     setWordCount(words.length);
   }, [content]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (title) {
       setSlug(
           title

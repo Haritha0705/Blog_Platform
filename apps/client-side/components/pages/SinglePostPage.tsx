@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -12,7 +11,6 @@ import {
   Avatar,
   Stack,
   Chip,
-  Divider,
   TextField,
 } from '@mui/material';
 
@@ -32,6 +30,7 @@ import {
 } from '@mui/icons-material';
 
 import { relatedPosts, comments, tableOfContents } from '@/data/content';
+import {useState} from "react";
 
 interface SinglePostPageProps {
   setCurrentPage: (page: string) => void;
@@ -41,7 +40,7 @@ interface SinglePostPageProps {
 const MotionCard = motion(Card);
 
 export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPageProps) {
-  const [activeSection, setActiveSection] = React.useState('introduction');
+  const [activeSection, setActiveSection] = useState('introduction');
 
   const singlePost = {
     id: postId || '1',

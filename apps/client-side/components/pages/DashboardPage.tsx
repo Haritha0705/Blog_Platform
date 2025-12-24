@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
 import {
   Box,
@@ -25,6 +24,7 @@ import {
 } from '@mui/icons-material';
 
 import { stats, recentPosts, notifications } from '@/data/content';
+import StatIcon from "@/components/ui/StatIcon";
 
 interface DashboardPageProps {
   setCurrentPage: (page: string) => void;
@@ -268,21 +268,5 @@ export function DashboardPage({ setCurrentPage }: DashboardPageProps) {
           </Box>
         </Container>
       </Box>
-  );
-}
-
-/* ============ SMALL COMPONENT ============ */
-function StatIcon({
-                    icon,
-                    value,
-                  }: {
-  icon: React.ReactNode;
-  value: number;
-}) {
-  return (
-      <Stack direction="row" spacing={1} alignItems="center">
-        {icon}
-        <Typography variant="body2">{value}</Typography>
-      </Stack>
   );
 }

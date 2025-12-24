@@ -234,7 +234,7 @@ export const featuredPost = {
     author: 'Sarah Johnson',
     date: 'Nov 28, 2025',
     readTime: '8 min read',
-    image: 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjB3b3Jrc3BhY2UlMjBsYXB0b3B8ZW58MXx8fHwxNzY0MzM5NjMzfDA&ixlib=rb-4.1.0&q=80&w=1080'
+    image: 'https://images.unsplash.com/photo-1611241893603-3c359704e0ee?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjcmVhdGl2ZSUyMGRlc2lnbnxlbnwxfHx8fDE3NjQzOTA5NTl8MA&ixlib=rb-4.1.0&q=80&w=1080'
 };
 
 export const latestPosts = [

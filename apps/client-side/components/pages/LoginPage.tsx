@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { motion } from 'framer-motion';
 import {
   Box,
@@ -20,6 +19,7 @@ import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import GoogleIcon from '@mui/icons-material/Google';
+import {useState} from "react";
 
 interface LoginPageProps {
   setCurrentPage: (page: string) => void;
@@ -32,12 +32,12 @@ export default function LoginPage({
                                     setCurrentPage,
                                     setIsAuthenticated,
                                   }: LoginPageProps) {
-  const [isLogin, setIsLogin] = React.useState(true);
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [name, setName] = React.useState('');
-  const [emailError, setEmailError] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState('');
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const validateEmail = (value: string) =>
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);

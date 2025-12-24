@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -26,6 +25,7 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import PublicOutlinedIcon from '@mui/icons-material/Public';
+import {useState} from "react";
 
 interface SettingsPageProps {
   setCurrentPage: (page: string) => void;
@@ -34,7 +34,7 @@ interface SettingsPageProps {
 const MotionCard = motion(Card);
 
 export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
-  const [tab, setTab] = React.useState(0);
+  const [tab, setTab] = useState(0);
 
   return (
       <Box sx={{ minHeight: '100vh', bgcolor: 'grey.100', py: 6, px: 2 }}>

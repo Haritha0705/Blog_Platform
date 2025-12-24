@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import { motion } from 'framer-motion';
 import {
   Box,
@@ -31,6 +30,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 
 import { myPosts } from '@/data/content';
+import {useState} from "react";
 
 interface MyPostsPageProps {
   setCurrentPage: (page: string) => void;
@@ -39,9 +39,9 @@ interface MyPostsPageProps {
 const MotionCard = motion(Card);
 
 export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [filterStatus, setFilterStatus] = React.useState<'all' | 'published' | 'draft'>('all');
-  const [selectedPosts, setSelectedPosts] = React.useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
+  const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
 
   const filteredPosts = myPosts.filter((post) => {
     const matchesSearch = post.title
@@ -115,7 +115,7 @@ export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
               <Select
                   value={filterStatus}
                   onChange={(e) =>
-                      setFilterStatus(e.target.value as any)
+                      setFilterStatus(e.target.value as never)
                   }
                   sx={{ width: 180 }}
               >

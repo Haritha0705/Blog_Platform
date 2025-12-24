@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
@@ -29,22 +28,24 @@ import {
   Search,
 } from '@mui/icons-material';
 
-import { blogPosts } from '@/data/content';
+import {blogPosts, posts} from '@/data/content';
+import {useState} from "react";
+import {BlogPostCard} from "@/components/ui/BlogPostCard";
 
 interface BlogListingPageProps {
   setCurrentPage: (page: string) => void;
   setSelectedPost?: (postId: string) => void;
 }
 
-const MotionCard = motion(Card);
-
 export function BlogListingPage({
                                   setCurrentPage,
                                   setSelectedPost,
                                 }: BlogListingPageProps) {
-  const [viewMode, setViewMode] = React.useState<'grid' | 'list'>('grid');
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [sort, setSort] = React.useState('latest');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sort, setSort] = useState('latest');
+
+  const LayoutComponent = viewMode === 'grid' ? Box : Stack;
 
   const categories = ['All', 'Technology', 'Development', 'Design', 'Writing', 'Performance'];
   const tags = ['React', 'TypeScript', 'CSS', 'Next.js', 'Design Systems', 'Performance', 'API'];
@@ -128,104 +129,27 @@ export function BlogListingPage({
               </Stack>
 
               {/* ================= POSTS ================= */}
-              {viewMode === 'grid' ? (
-                  <Box display="grid" gridTemplateColumns={{ md: '1fr 1fr' }} gap={3} mb={6}>
-                    {blogPosts.map((post) => (
-                        <MotionCard
-                            key={post.id}
-                            whileHover={{ scale: 1.02 }}
-                            transition={{ duration: 0.3 }}
-                            sx={{ cursor: 'pointer' }}
-                            onClick={() => handlePostClick(post.id)}
-                        >
-                          <CardMedia sx={{ position: 'relative', height: 220 }}>
-                            <Image
-                                src={post.image}
-                                alt={post.title}
-                                fill
-                                style={{ objectFit: 'cover' }}
-                            />
-                          </CardMedia>
+              <LayoutComponent
+                  {...(viewMode === 'grid'
+                      ? {
+                        display: 'grid',
+                        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                        gap: 3,
+                      }
+                      : {
+                        spacing: 3,
+                      })}
+                  mb={6}
+              >
+                {blogPosts.map((post) => (
+                    <BlogPostCard
+                        key={post.id}
+                        post={post}
+                        onClick={handlePostClick}
+                    />
+                ))}
+              </LayoutComponent>
 
-                          <CardContent>
-                            <Chip label={post.category} size="small" sx={{ mb: 1 }} />
-
-                            <Typography variant="h6" fontWeight="bold" gutterBottom>
-                              {post.title}
-                            </Typography>
-
-                            <Typography variant="body2" color="text.secondary" mb={2}>
-                              {post.excerpt}
-                            </Typography>
-
-                            <Divider />
-
-                            <Stack direction="row" justifyContent="space-between" mt={2}>
-                              <Typography variant="caption">{post.author}</Typography>
-                              <Stack direction="row" spacing={2}>
-                                <Stack direction="row" spacing={0.5} alignItems="center">
-                                  <CalendarMonth fontSize="small" />
-                                  <Typography variant="caption">{post.date}</Typography>
-                                </Stack>
-                                <Stack direction="row" spacing={0.5} alignItems="center">
-                                  <AccessTime fontSize="small" />
-                                  <Typography variant="caption">{post.readTime}</Typography>
-                                </Stack>
-                              </Stack>
-                            </Stack>
-                          </CardContent>
-                        </MotionCard>
-                    ))}
-                  </Box>
-              ) : (
-                  <Stack spacing={3} mb={6}>
-                    {blogPosts.map((post) => (
-                        <MotionCard
-                            key={post.id}
-                            whileHover={{ scale: 1.01 }}
-                            sx={{ cursor: 'pointer' }}
-                            onClick={() => handlePostClick(post.id)}
-                        >
-                          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3} p={3}>
-                            <Box sx={{ position: 'relative', width: 200, height: 140, flexShrink: 0 }}>
-                              <Image
-                                  src={post.image}
-                                  alt={post.title}
-                                  fill
-                                  style={{ objectFit: 'cover', borderRadius: 8 }}
-                              />
-                            </Box>
-
-                            <Box flex={1}>
-                              <Chip label={post.category} size="small" sx={{ mb: 1 }} />
-
-                              <Typography variant="h5" fontWeight="bold">
-                                {post.title}
-                              </Typography>
-
-                              <Typography color="text.secondary" mb={2}>
-                                {post.excerpt}
-                              </Typography>
-
-                              <Stack direction="row" spacing={2} color="text.secondary">
-                                <Typography variant="body2">{post.author}</Typography>
-                                <Typography variant="body2">•</Typography>
-                                <Stack direction="row" spacing={0.5} alignItems="center">
-                                  <CalendarMonth fontSize="small" />
-                                  <Typography variant="body2">{post.date}</Typography>
-                                </Stack>
-                                <Typography variant="body2">•</Typography>
-                                <Stack direction="row" spacing={0.5} alignItems="center">
-                                  <AccessTime fontSize="small" />
-                                  <Typography variant="body2">{post.readTime}</Typography>
-                                </Stack>
-                              </Stack>
-                            </Box>
-                          </Stack>
-                        </MotionCard>
-                    ))}
-                  </Stack>
-              )}
 
               {/* Pagination */}
               <Stack direction="row" justifyContent="center" spacing={1}>

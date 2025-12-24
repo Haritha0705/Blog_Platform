@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
@@ -52,25 +51,39 @@ export default function HomePage({
         <Box
             sx={{
               py: { xs: 8, lg: 14 },
-              background: 'linear-gradient(135deg, rgba(25,118,210,0.1), transparent)',
+              background: 'linear-gradient(135deg, #f3f4ff 0%, #ffffff 60%)',
             }}
         >
           <Container maxWidth="lg">
-            <Grid container spacing={6} alignItems="center">
-              <Grid container spacing={{ xs:12, lg:6 }}>
-                <Stack spacing={3}>
-                  <Chip label={featuredPost.category} color="primary" />
+            <Grid container spacing={8} alignItems="center">
 
-                  <Typography variant="h3" fontWeight={700}>
+              {/* LEFT CONTENT */}
+              <Grid container sx={{xs:12, lg:6}}>
+                <Stack spacing={3}>
+                  <Chip
+                      label={featuredPost.category}
+                      color="primary"
+                      sx={{ width: 'fit-content', fontWeight: 500 }}
+                  />
+
+                  <Typography
+                      variant="h2"
+                      fontWeight={800}
+                      lineHeight={1.15}
+                  >
                     {featuredPost.title}
                   </Typography>
 
-                  <Typography color="text.secondary">
+                  <Typography
+                      color="text.secondary"
+                      sx={{ maxWidth: 520, fontSize: 16 }}
+                  >
                     {featuredPost.excerpt}
                   </Typography>
 
+                  {/* META INFO */}
                   <Stack direction="row" spacing={2} alignItems="center">
-                    <Typography variant="body2">
+                    <Typography variant="body2" fontWeight={500}>
                       {featuredPost.author}
                     </Typography>
 
@@ -91,8 +104,16 @@ export default function HomePage({
 
                   <Button
                       variant="contained"
-                      size="large"
+                      size="medium"
                       endIcon={<ArrowForwardIcon />}
+                      sx={{
+                        width: 'fit-content',
+                        px: 3,
+                        py: 1,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontWeight: 500,
+                      }}
                       onClick={() => handlePostClick(featuredPost.id)}
                   >
                     Read Article
@@ -100,19 +121,31 @@ export default function HomePage({
                 </Stack>
               </Grid>
 
-              <Grid container spacing={{ xs:12, lg:6 }}>
-                <Box sx={{ position: 'relative', aspectRatio: '4 / 3', borderRadius: 4, overflow: 'hidden' }}>
+              {/* RIGHT IMAGE */}
+                <Grid container sx={{xs:12, lg:6}}>
+                <Box
+                    sx={{
+                      position: 'relative',
+                      aspectRatio: '4 / 3',
+                      borderRadius: 4,
+                      overflow: 'hidden',
+                      boxShadow: '0 20px 40px rgba(0,0,0,0.12)',
+                    }}
+                >
                   <Image
                       src={featuredPost.image}
                       alt={featuredPost.title}
                       fill
                       style={{ objectFit: 'cover' }}
+                      priority
                   />
                 </Box>
               </Grid>
+
             </Grid>
           </Container>
         </Box>
+
 
         {/* ================= LATEST POSTS ================= */}
         <Container maxWidth="lg" sx={{ py: 10 }}>

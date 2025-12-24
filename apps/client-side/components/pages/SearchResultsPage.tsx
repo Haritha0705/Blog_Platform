@@ -1,6 +1,5 @@
 'use client';
 
-import * as React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 
@@ -24,6 +23,7 @@ import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 
 import { results } from '@/data/content';
+import {useState} from "react";
 
 interface SearchResultsPageProps {
   setCurrentPage: (page: string) => void;
@@ -38,7 +38,7 @@ export default function SearchResultsPage({
                                             setSelectedPost,
                                             searchQuery: initialQuery = '',
                                           }: SearchResultsPageProps) {
-  const [searchQuery, setSearchQuery] = React.useState(initialQuery);
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
 
   const handlePostClick = (postId: string) => {
     setSelectedPost?.(postId);

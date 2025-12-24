@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
@@ -30,6 +29,8 @@ import {
 } from '@mui/icons-material';
 
 import { author, posts } from '@/data/content';
+import Stat from "@/components/ui/Stat";
+import {useState} from "react";
 
 interface AuthorPageProps {
   setCurrentPage: (page: string) => void;
@@ -39,7 +40,7 @@ interface AuthorPageProps {
 const MotionCard = motion(Card);
 
 export function AuthorPage({ setCurrentPage, setSelectedPost }: AuthorPageProps) {
-  const [tab, setTab] = React.useState(0);
+  const [tab, setTab] = useState(0);
 
   const handlePostClick = (postId: string) => {
     setSelectedPost?.(postId);
@@ -233,16 +234,3 @@ export function AuthorPage({ setCurrentPage, setSelectedPost }: AuthorPageProps)
   );
 }
 
-/* ================= SMALL COMPONENT ================= */
-function Stat({ label, value }: { label: string; value: number }) {
-  return (
-      <Box>
-        <Typography fontWeight="bold" fontSize={20}>
-          {value}
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {label}
-        </Typography>
-      </Box>
-  );
-}
