@@ -78,7 +78,7 @@ export default function App() {
                     setIsAuthenticated={setIsAuthenticated}
                     onSearch={handleSearch}
                 />
-                <Box component="main" flex="1">
+                <Box component="main" flex="1" sx={{ mx: 2 }}>
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentPage + selectedPostId}
@@ -91,6 +91,7 @@ export default function App() {
                         </motion.div>
                     </AnimatePresence>
                 </Box>
+
                 <Footer />
                 <Toaster />
             </Box>

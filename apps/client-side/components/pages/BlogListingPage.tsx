@@ -28,9 +28,9 @@ import {
   Search,
 } from '@mui/icons-material';
 
-import {blogPosts, posts} from '@/data/content';
-import {useState} from "react";
-import {BlogPostCard} from "@/components/ui/BlogPostCard";
+import { blogPosts } from '@/data/content';
+import { useState } from 'react';
+import { BlogPostCard } from '@/components/ui/BlogPostCard';
 
 interface BlogListingPageProps {
   setCurrentPage: (page: string) => void;
@@ -63,7 +63,7 @@ export function BlogListingPage({
             <Box flex={1}>
               {/* Header */}
               <Box mb={4}>
-                <Typography variant="h3" fontWeight="bold" mb={1}>
+                <Typography variant="h3" fontWeight={800} mb={1}>
                   All Articles
                 </Typography>
                 <Typography color="text.secondary">
@@ -75,17 +75,30 @@ export function BlogListingPage({
               <Stack spacing={3} mb={4}>
                 <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                   <TextField
+                      size="small"
                       fullWidth
                       placeholder="Search articles..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
+                      sx={{
+                        '& .MuiOutlinedInput-root': {
+                          borderRadius: 4
+                        },
+                      }}
                       InputProps={{
-                        startAdornment: <Search sx={{ mr: 1 }} />,
+                        startAdornment: <Search sx={{ mr: 1, color: 'gray' }} />
                       }}
                   />
 
                   <Stack direction="row" spacing={1}>
-                    <Button variant="outlined" startIcon={<Tune />}>
+                    <Button variant="outlined"
+                            sx={{
+                              borderRadius: 4,
+                              borderColor: 'divider',
+                              fontWeight: 'bold',
+                              color: 'black',
+                            }}
+                            size="small" startIcon={<Tune />}>
                       Filters
                     </Button>
 
@@ -94,20 +107,20 @@ export function BlogListingPage({
                           display: 'flex',
                           border: '1px solid',
                           borderColor: 'divider',
-                          borderRadius: 1,
+                          borderRadius: 4,
                           p: 0.5,
                         }}
                     >
                       <IconButton
                           size="small"
-                          color={viewMode === 'grid' ? 'primary' : 'default'}
+                          color={viewMode === 'grid' ? 'warning' : 'default'}
                           onClick={() => setViewMode('grid')}
                       >
                         <GridView />
                       </IconButton>
                       <IconButton
                           size="small"
-                          color={viewMode === 'list' ? 'primary' : 'default'}
+                          color={viewMode === 'list' ? 'warning' : 'default'}
                           onClick={() => setViewMode('list')}
                       >
                         <ViewList />
@@ -116,11 +129,12 @@ export function BlogListingPage({
                   </Stack>
                 </Stack>
 
-                <Stack direction="row" alignItems="center" spacing={2}>
-                  <Typography variant="body2" color="text.secondary">
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <Typography variant="body1" color="text.secondary">
                     Sort by:
                   </Typography>
-                  <Select size="small" value={sort} onChange={(e) => setSort(e.target.value)}>
+                  <Select size="small" value={sort} onChange={(e) => setSort(e.target.value)}
+                  sx={{ borderRadius: 4, width: '160px',fontSize: 15 }}>
                     <MenuItem value="latest">Latest</MenuItem>
                     <MenuItem value="popular">Most Popular</MenuItem>
                     <MenuItem value="trending">Trending</MenuItem>
@@ -134,7 +148,8 @@ export function BlogListingPage({
                       ? {
                         display: 'grid',
                         gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-                        gap: 3,
+                        gap: 4,
+                        alignItems: 'stretch',
                       }
                       : {
                         spacing: 3,
@@ -149,7 +164,6 @@ export function BlogListingPage({
                     />
                 ))}
               </LayoutComponent>
-
 
               {/* Pagination */}
               <Stack direction="row" justifyContent="center" spacing={1}>
@@ -166,21 +180,27 @@ export function BlogListingPage({
             {/* ================= SIDEBAR ================= */}
             <Box width={{ lg: 320 }} flexShrink={0}>
               <Stack spacing={3}>
+                {/* Categories */}
                 <Card sx={{ p: 3 }}>
-                  <Typography fontWeight="bold" mb={2}>
+                  <Typography fontWeight={700} mb={2}>
                     Categories
                   </Typography>
                   <Stack spacing={1}>
                     {categories.map((cat) => (
-                        <Button key={cat} variant="text" sx={{ justifyContent: 'flex-start' }}>
+                        <Button
+                            key={cat}
+                            variant="text"
+                            sx={{ justifyContent: 'flex-start' }}
+                        >
                           {cat}
                         </Button>
                     ))}
                   </Stack>
                 </Card>
 
+                {/* Tags */}
                 <Card sx={{ p: 3 }}>
-                  <Typography fontWeight="bold" mb={2}>
+                  <Typography fontWeight={700} mb={2}>
                     Popular Tags
                   </Typography>
                   <Stack direction="row" flexWrap="wrap" gap={1}>
@@ -190,8 +210,15 @@ export function BlogListingPage({
                   </Stack>
                 </Card>
 
-                <Card sx={{ p: 3, bgcolor: 'primary.main', color: 'primary.contrastText' }}>
-                  <Typography fontWeight="bold" mb={1}>
+                {/* Newsletter */}
+                <Card
+                    sx={{
+                      p: 3,
+                      bgcolor: 'primary.main',
+                      color: 'primary.contrastText',
+                    }}
+                >
+                  <Typography fontWeight={700} mb={1}>
                     Newsletter
                   </Typography>
                   <Typography variant="body2" mb={2}>

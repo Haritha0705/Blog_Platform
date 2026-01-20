@@ -42,7 +42,7 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
             sx={{
                 cursor: 'pointer',
                 borderRadius: 4,
-                height: '100%',              // 🔑 equal height in grid
+                height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
             }}
@@ -62,10 +62,10 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
-                    flexGrow: 1,               // 🔑 fill remaining height
+                    flexGrow: 1,
                 }}
             >
-                <Chip label={post.category} size="small" sx={{ mb: 1, alignSelf: 'flex-start' }} />
+                <Chip label={post.category} color="warning" size="small" sx={{ mb: 1, alignSelf: 'flex-start' }} />
 
                 {/* Title – fixed lines */}
                 <Typography
