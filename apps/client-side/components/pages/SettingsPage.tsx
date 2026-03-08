@@ -148,7 +148,7 @@ export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
                         fullWidth
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        inputProps={{ maxLength: 200 }}
+                        slotProps={{ htmlInput: { maxLength: 200 } }}
                     />
                     <Typography variant="caption" color="text.secondary">
                       Max 200 characters

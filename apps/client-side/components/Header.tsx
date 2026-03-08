@@ -30,7 +30,8 @@ interface HeaderProps {
   toggleDarkMode: () => void;
   currentPage: string;
   setCurrentPage: (page: string) => void;
-  isAuthenticated: boolean;onLogout: () => void;
+  isAuthenticated: boolean;
+  onLogout: () => void;
   onSearch?: (query: string) => void;
 }
 

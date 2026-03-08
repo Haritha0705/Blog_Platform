@@ -144,8 +144,10 @@ export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
                   placeholder="Search posts..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  InputProps={{
-                    startAdornment: <SearchIcon sx={{ mr: 1 }} />,
+                  slotProps={{
+                    input: {
+                      startAdornment: <SearchIcon sx={{ mr: 1 }} />,
+                    },
                   }}
               />
 

@@ -202,12 +202,14 @@ export default function LoginPage({
                     }}
                     error={!!emailError}
                     helperText={emailError}
-                    InputProps={{
-                      startAdornment: (
-                          <IconButton edge="start" disabled>
-                            <MailOutlineIcon />
-                          </IconButton>
-                      ),
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                            <IconButton edge="start" disabled>
+                              <MailOutlineIcon />
+                            </IconButton>
+                        ),
+                      },
                     }}
                     fullWidth
                     required
@@ -223,12 +225,14 @@ export default function LoginPage({
                     }}
                     error={!!passwordError}
                     helperText={passwordError}
-                    InputProps={{
-                      startAdornment: (
-                          <IconButton edge="start" disabled>
-                            <LockOutlinedIcon />
-                          </IconButton>
-                      ),
+                    slotProps={{
+                      input: {
+                        startAdornment: (
+                            <IconButton edge="start" disabled>
+                              <LockOutlinedIcon />
+                            </IconButton>
+                        ),
+                      },
                     }}
                     fullWidth
                     required

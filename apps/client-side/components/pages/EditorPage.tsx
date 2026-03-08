@@ -194,9 +194,11 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
                         variant="standard"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        InputProps={{
-                          disableUnderline: true,
-                          sx: { fontSize: 32, fontWeight: 'bold' },
+                        slotProps={{
+                          input: {
+                            disableUnderline: true,
+                            sx: { fontSize: 32, fontWeight: 'bold' },
+                          },
                         }}
                     />
                   </CardContent>
@@ -232,7 +234,7 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         variant="standard"
-                        InputProps={{ disableUnderline: true }}
+                        slotProps={{ input: { disableUnderline: true } }}
                     />
                   </CardContent>
                 </Card>
@@ -325,7 +327,7 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
                         value={excerpt}
                         onChange={(e) => setExcerpt(e.target.value)}
                         helperText={`${excerpt.length}/160`}
-                        inputProps={{ maxLength: 160 }}
+                        slotProps={{ htmlInput: { maxLength: 160 } }}
                     />
                   </Stack>
                 </CardContent>

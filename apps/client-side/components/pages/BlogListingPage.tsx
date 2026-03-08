@@ -105,8 +105,10 @@ export function BlogListingPage({
                           borderRadius: 4
                         },
                       }}
-                      InputProps={{
-                        startAdornment: <Search sx={{ mr: 1, color: 'gray' }} />
+                      slotProps={{
+                        input: {
+                          startAdornment: <Search sx={{ mr: 1, color: 'gray' }} />
+                        },
                       }}
                   />
 
