@@ -31,6 +31,13 @@ import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
 
 import { myPosts } from '@/data/content';
 import {useState} from "react";
+import { useQuery, useMutation } from '@apollo/client/react';
+import { GET_POSTS_BY_AUTHOR, DELETE_POST } from '@/lib/graphql/operations';
+import { useAuth } from '@/lib/auth-context';
+import { toast } from 'sonner';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyData = any;
 
 interface MyPostsPageProps {
   setCurrentPage: (page: string) => void;
@@ -39,11 +46,31 @@ interface MyPostsPageProps {
 const MotionCard = motion(Card);
 
 export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<'all' | 'published' | 'draft'>('all');
   const [selectedPosts, setSelectedPosts] = useState<string[]>([]);
 
-  const filteredPosts = myPosts.filter((post) => {
+  const { data, refetch } = useQuery<AnyData>(GET_POSTS_BY_AUTHOR, {
+    variables: { authorId: user?.id || 0 },
+    skip: !user,
+  });
+  const [deletePost] = useMutation<AnyData>(DELETE_POST);
+
+  // Map backend posts to display format
+  const backendPosts = data?.postsByAuthor?.map((p: { id: number; title: string; published: boolean; createdAt: string; views: number; likesCount: number; commentsCount: number }) => ({
+    id: String(p.id),
+    title: p.title,
+    status: p.published ? 'published' : 'draft',
+    date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    views: p.published ? String(p.views) : '-',
+    comments: p.commentsCount,
+    likes: p.likesCount,
+  })) || [];
+
+  const allPosts = backendPosts.length > 0 ? backendPosts : myPosts;
+
+  const filteredPosts = allPosts.filter((post: { title: string; status: string }) => {
     const matchesSearch = post.title
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
@@ -52,11 +79,21 @@ export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
     return matchesSearch && matchesFilter;
   });
 
+  const handleDeletePost = async (id: string) => {
+    try {
+      await deletePost({ variables: { id: parseInt(id) } });
+      toast.success('Post deleted');
+      refetch();
+    } catch {
+      toast.error('Failed to delete post');
+    }
+  };
+
   const toggleSelectAll = () => {
     setSelectedPosts(
         selectedPosts.length === filteredPosts.length
             ? []
-            : filteredPosts.map((p) => p.id)
+            : filteredPosts.map((p: { id: string }) => p.id)
     );
   };
 
@@ -178,7 +215,7 @@ export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
                   </TableHead>
 
                   <TableBody>
-                    {filteredPosts.map((post) => (
+                    {filteredPosts.map((post: { id: string; title: string; status: string; date: string; views: string | number; comments: number; likes: number }) => (
                         <TableRow key={post.id} hover>
                           <TableCell padding="checkbox">
                             <Checkbox
@@ -227,6 +264,7 @@ export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
                               <IconButton
                                   size="small"
                                   color="error"
+                                  onClick={() => handleDeletePost(post.id)}
                               >
                                 <DeleteIcon />
                               </IconButton>

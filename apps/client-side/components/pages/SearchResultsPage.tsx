@@ -22,8 +22,13 @@ import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined
 import AccessTimeOutlinedIcon from '@mui/icons-material/AccessTimeOutlined';
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 
-import { results } from '@/data/content';
+import { results as staticResults } from '@/data/content';
 import {useState} from "react";
+import { useQuery } from '@apollo/client/react';
+import { SEARCH_POSTS } from '@/lib/graphql/operations';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyData = any;
 
 interface SearchResultsPageProps {
   setCurrentPage: (page: string) => void;
@@ -39,6 +44,24 @@ export default function SearchResultsPage({
                                             searchQuery: initialQuery = '',
                                           }: SearchResultsPageProps) {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
+
+  const { data } = useQuery<AnyData>(SEARCH_POSTS, {
+    variables: { query: searchQuery },
+    skip: !searchQuery.trim(),
+  });
+
+  const backendResults = data?.searchPosts?.map((p: { id: number; title: string; content: string; thumbnail?: string; author?: { name: string }; createdAt: string }) => ({
+    id: String(p.id),
+    title: p.title,
+    excerpt: p.content.substring(0, 150) + '...',
+    category: 'Technology',
+    author: p.author?.name || 'Unknown',
+    date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    readTime: `${Math.ceil(p.content.split(' ').length / 200)} min`,
+    image: p.thumbnail || 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?w=400',
+  })) || [];
+
+  const results = backendResults.length > 0 ? backendResults : staticResults;
 
   const handlePostClick = (postId: string) => {
     setSelectedPost?.(postId);
@@ -143,7 +166,7 @@ export default function SearchResultsPage({
           {/* Results */}
           {results.length > 0 ? (
               <Stack spacing={3} mb={6}>
-                {results.map((result) => (
+                {results.map((result: { id: string; title: string; excerpt: string; category: string; author: string; date: string; readTime: string; image: string }) => (
                     <MotionCard
                         key={result.id}
                         whileHover={{ scale: 1.01 }}

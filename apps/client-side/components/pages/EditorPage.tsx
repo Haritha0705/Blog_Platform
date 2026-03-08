@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import {
   Box,
   Container,
@@ -31,15 +30,22 @@ import {
   Send,
   Close,
 } from '@mui/icons-material';
-import {useEffect, useState} from "react";
+import {useEffect, useState, useMemo} from "react";
+import { useMutation } from '@apollo/client/react';
+import { CREATE_POST } from '@/lib/graphql/operations';
+import { useAuth } from '@/lib/auth-context';
+import { toast } from 'sonner';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyData = any;
 
 interface EditorPageProps {
   setCurrentPage: (page: string) => void;
 }
 
-const MotionCard = motion(Card);
-
 export function EditorPage({ setCurrentPage }: EditorPageProps) {
+  const { user } = useAuth();
+  const [createPost, { loading: publishing }] = useMutation<AnyData>(CREATE_POST);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [category, setCategory] = useState('');
@@ -48,26 +54,77 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
   const [slug, setSlug] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
-  const [wordCount, setWordCount] = useState(0);
 
-  useEffect(() => {
-    const words = content.trim().split(/\s+/).filter(Boolean);
-    setWordCount(words.length);
+  const wordCount = useMemo(() => {
+    return content.trim().split(/\s+/).filter(Boolean).length;
   }, [content]);
 
-  useEffect(() => {
-    if (title) {
-      setSlug(
-          title
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/^-+|-+$/g, '')
-      );
-    }
+  const autoSlug = useMemo(() => {
+    if (!title) return '';
+    return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   }, [title]);
 
-  const handleSave = () => setLastSaved(new Date());
-  const handlePublish = () => setCurrentPage('dashboard');
+  useEffect(() => {
+    setSlug(autoSlug);
+  }, [autoSlug]);
+
+  const handleSave = async () => {
+    if (!title.trim() || !content.trim()) {
+      toast.error('Title and content are required');
+      return;
+    }
+    if (!user) {
+      toast.error('You must be logged in');
+      return;
+    }
+    try {
+      await createPost({
+        variables: {
+          createPostInput: {
+            title,
+            content,
+            slug: slug || undefined,
+            published: false,
+            authorId: user.id,
+            tags: tags.length > 0 ? tags : undefined,
+          },
+        },
+      });
+      setLastSaved(new Date());
+      toast.success('Draft saved!');
+    } catch {
+      toast.error('Failed to save draft');
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!title.trim() || !content.trim()) {
+      toast.error('Title and content are required');
+      return;
+    }
+    if (!user) {
+      toast.error('You must be logged in');
+      return;
+    }
+    try {
+      await createPost({
+        variables: {
+          createPostInput: {
+            title,
+            content,
+            slug: slug || undefined,
+            published: true,
+            authorId: user.id,
+            tags: tags.length > 0 ? tags : undefined,
+          },
+        },
+      });
+      toast.success('Post published!');
+      setCurrentPage('my-posts');
+    } catch {
+      toast.error('Failed to publish post');
+    }
+  };
 
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && tagInput.trim()) {
@@ -114,8 +171,8 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
                 <Button size="small" variant="outlined" startIcon={<Visibility />}>
                   Preview
                 </Button>
-                <Button size="small" variant="contained" startIcon={<Send />} onClick={handlePublish}>
-                  Publish
+                <Button size="small" variant="contained" startIcon={<Send />} onClick={handlePublish} disabled={publishing}>
+                  {publishing ? 'Publishing...' : 'Publish'}
                 </Button>
               </Stack>
             </Stack>

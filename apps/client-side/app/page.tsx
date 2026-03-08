@@ -3,40 +3,47 @@
 import { useState } from 'react';
 import { Box, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Toaster } from '@/components/ui/sonner';
-import {Header} from '@/components/Header';
-import {Footer} from '@/components/Footer';
+import { Toaster } from 'sonner';
+import { AuthProvider, useAuth } from '@/lib/auth-context';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 import HomePage from '@/components/pages/HomePage';
-import {BlogListingPage} from '@/components/pages/BlogListingPage';
+import { BlogListingPage } from '@/components/pages/BlogListingPage';
 import SinglePostPage from '@/components/pages/SinglePostPage';
 import LoginPage from '@/components/pages/LoginPage';
 import { DashboardPage } from '@/components/pages/DashboardPage';
-import {EditorPage} from '@/components/pages/EditorPage';
+import { EditorPage } from '@/components/pages/EditorPage';
 import MyPostsPage from '@/components/pages/MyPostsPage';
 import SettingsPage from '@/components/pages/SettingsPage';
-import {AuthorPage} from '@/components/pages/AuthorPage';
-import  SearchResultsPage from '@/components/pages/SearchResultsPage';
+import { AuthorPage } from '@/components/pages/AuthorPage';
+import SearchResultsPage from '@/components/pages/SearchResultsPage';
 
-export default function App() {
+function AppContent() {
     const [darkMode, setDarkMode] = useState(false);
     const [currentPage, setCurrentPage] = useState<string>('home');
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [selectedPostId, setSelectedPostId] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState<string>('');
+    const { isAuthenticated, logout } = useAuth();
 
     // MUI Theme
     const theme = createTheme({
         palette: {
             mode: darkMode ? 'dark' : 'light',
             primary: {
-                main: '#1976d2',
+                main: '#4F46E5',
+            },
+            secondary: {
+                main: '#F97316',
             },
         },
     });
 
     const toggleDarkMode = () => setDarkMode(!darkMode);
 
-    const handleSearch = (query: string) => setSearchQuery(query);
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        setCurrentPage('search');
+    };
 
     const renderPage = () => {
         switch (currentPage) {
@@ -51,15 +58,15 @@ export default function App() {
             case 'search':
                 return <SearchResultsPage setCurrentPage={setCurrentPage} setSelectedPost={setSelectedPostId} searchQuery={searchQuery} />;
             case 'login':
-                return <LoginPage setCurrentPage={setCurrentPage} setIsAuthenticated={setIsAuthenticated} />;
+                return <LoginPage setCurrentPage={setCurrentPage} />;
             case 'dashboard':
-                return isAuthenticated ? <DashboardPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} setIsAuthenticated={setIsAuthenticated} />;
+                return isAuthenticated ? <DashboardPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} />;
             case 'editor':
-                return isAuthenticated ? <EditorPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} setIsAuthenticated={setIsAuthenticated} />;
+                return isAuthenticated ? <EditorPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} />;
             case 'my-posts':
-                return isAuthenticated ? <MyPostsPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} setIsAuthenticated={setIsAuthenticated} />;
+                return isAuthenticated ? <MyPostsPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} />;
             case 'settings':
-                return isAuthenticated ? <SettingsPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} setIsAuthenticated={setIsAuthenticated} />;
+                return isAuthenticated ? <SettingsPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} />;
             default:
                 return <HomePage setCurrentPage={setCurrentPage} setSelectedPost={setSelectedPostId} />;
         }
@@ -75,7 +82,7 @@ export default function App() {
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
                     isAuthenticated={isAuthenticated}
-                    setIsAuthenticated={setIsAuthenticated}
+                    onLogout={logout}
                     onSearch={handleSearch}
                 />
                 <Box component="main" flex="1" sx={{ mx: 2 }}>
@@ -93,8 +100,17 @@ export default function App() {
                 </Box>
 
                 <Footer />
-                <Toaster />
+                <Toaster richColors position="bottom-right" />
             </Box>
         </ThemeProvider>
     );
 }
+
+export default function App() {
+    return (
+        <AuthProvider>
+            <AppContent />
+        </AuthProvider>
+    );
+}
+

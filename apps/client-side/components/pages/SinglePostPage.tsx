@@ -26,11 +26,17 @@ import {
   ThumbUp as ThumbUpIcon,
   Comment as CommentIcon,
   ChevronLeft as ChevronLeftIcon,
-  ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
 
-import { relatedPosts, comments, tableOfContents } from '@/data/content';
+import { relatedPosts, comments as staticComments, tableOfContents } from '@/data/content';
 import {useState} from "react";
+import { useQuery, useMutation } from '@apollo/client/react';
+import { GET_POST, GET_COMMENTS_BY_POST, CREATE_COMMENT, TOGGLE_LIKE } from '@/lib/graphql/operations';
+import { useAuth } from '@/lib/auth-context';
+import { toast } from 'sonner';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyData = any;
 
 interface SinglePostPageProps {
   setCurrentPage: (page: string) => void;
@@ -41,22 +47,102 @@ const MotionCard = motion(Card);
 
 export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPageProps) {
   const [activeSection, setActiveSection] = useState('introduction');
+  const [newComment, setNewComment] = useState('');
+  const { user } = useAuth();
 
-  const singlePost = {
+  const postIdNum = postId ? parseInt(postId) : 0;
+  const isRealPost = postIdNum > 0;
+
+  const { data: postData } = useQuery<AnyData>(GET_POST, {
+    variables: { id: postIdNum },
+    skip: !isRealPost,
+  });
+
+  const { data: commentsData, refetch: refetchComments } = useQuery<AnyData>(GET_COMMENTS_BY_POST, {
+    variables: { postId: postIdNum },
+    skip: !isRealPost,
+  });
+
+  const [createComment] = useMutation<AnyData>(CREATE_COMMENT);
+  const [toggleLike] = useMutation<AnyData>(TOGGLE_LIKE);
+
+  const handlePostComment = async () => {
+    if (!newComment.trim()) return;
+    if (!user) {
+      toast.error('Please login to comment');
+      return;
+    }
+    try {
+      await createComment({
+        variables: { createCommentInput: { content: newComment, postId: postIdNum, authorId: user.id } },
+      });
+      setNewComment('');
+      refetchComments();
+      toast.success('Comment posted!');
+    } catch {
+      toast.error('Failed to post comment');
+    }
+  };
+
+  const handleLike = async () => {
+    if (!user) {
+      toast.error('Please login to like');
+      return;
+    }
+    try {
+      await toggleLike({ variables: { createLikeInput: { userId: user.id, postId: postIdNum } } });
+      toast.success('Liked!');
+    } catch {
+      toast.error('Failed to toggle like');
+    }
+  };
+
+  const realPost = postData?.post;
+  const realComments = commentsData?.commentsByPost || [];
+
+  const singlePost = realPost ? {
+    id: String(realPost.id),
+    title: realPost.title,
+    category: 'Technology',
+    author: {
+      name: realPost.author?.name || 'Unknown',
+      avatar: realPost.author?.avatar || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=100',
+      bio: realPost.author?.bio || '',
+      followers: '0',
+    },
+    date: new Date(realPost.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
+    readTime: `${Math.ceil((realPost.content?.split(' ').length || 0) / 200)} min read`,
+    views: String(realPost.views || 0),
+    image: realPost.thumbnail || 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?w=1080',
+    content: realPost.content || '',
+  } : {
     id: postId || '1',
     title: 'The Future of Web Development: Trends to Watch in 2025',
     category: 'Technology',
     author: {
       name: 'Sarah Johnson',
       avatar: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=100',
-      bio: 'Senior Software Engineer and Tech Writer. Passionate about web technologies and developer experience.',
+      bio: 'Senior Software Engineer and Tech Writer.',
       followers: '12.5K',
     },
     date: 'November 28, 2025',
     readTime: '8 min read',
     views: '3.2K',
-    image: 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    image: 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?w=1080',
+    content: '',
   };
+
+  const displayComments = realComments.length > 0
+    ? realComments.map((c: { id: number; content: string; author?: { name: string; avatar?: string }; createdAt: string }) => ({
+        id: String(c.id),
+        author: c.author?.name || 'Unknown',
+        avatar: c.author?.avatar || 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=50',
+        date: new Date(c.createdAt).toLocaleDateString(),
+        content: c.content,
+        likes: 0,
+        replies: [],
+      }))
+    : staticComments;
 
   return (
       <Box sx={{ minHeight: '100vh', py: 6, px: 2 }}>
@@ -147,8 +233,12 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
 
               {/* Article Content */}
               <Stack spacing={4} className="article-content">
-                {/* Example Sections */}
-                {tableOfContents.map((section) => (
+                {singlePost.content ? (
+                  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.8 }}>
+                    {singlePost.content}
+                  </Typography>
+                ) : (
+                  tableOfContents.map((section) => (
                     <Box key={section.id} id={section.id}>
                       <Typography variant="h5" mb={1}>
                         {section.title}
@@ -157,7 +247,8 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
                         {section.title}
                       </Typography>
                     </Box>
-                ))}
+                  ))
+                )}
               </Stack>
 
               {/* Author Bio */}
@@ -209,7 +300,7 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
               {/* Comments Section */}
               <Box mt={6}>
                 <Typography variant="h5" fontWeight={600} mb={2}>
-                  Comments ({comments.length})
+                  Comments ({displayComments.length})
                 </Typography>
 
                 {/* Add Comment */}
@@ -219,9 +310,11 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
                       placeholder="Share your thoughts..."
                       multiline
                       minRows={3}
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
                   />
                   <Box textAlign="right" mt={1}>
-                    <Button variant="contained" size="small">
+                    <Button variant="contained" size="small" onClick={handlePostComment}>
                       Post Comment
                     </Button>
                   </Box>
@@ -229,7 +322,7 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
 
                 {/* Comments List */}
                 <Stack spacing={2}>
-                  {comments.map((comment) => (
+                  {displayComments.map((comment: { id: string; author: string; avatar: string; date: string; content: string; likes: number }) => (
                       <MotionCard key={comment.id} sx={{ p: 2 }}>
                         <Stack direction="row" spacing={2}>
                           <Avatar sx={{ width: 40, height: 40 }}>
@@ -242,7 +335,7 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
                             </Stack>
                             <Typography variant="body2">{comment.content}</Typography>
                             <Stack direction="row" spacing={1} mt={1}>
-                              <Button size="small" variant="text" startIcon={<ThumbUpIcon />}>
+                              <Button size="small" variant="text" startIcon={<ThumbUpIcon />} onClick={handleLike}>
                                 {comment.likes}
                               </Button>
                               <Button size="small" variant="text" startIcon={<CommentIcon />}>

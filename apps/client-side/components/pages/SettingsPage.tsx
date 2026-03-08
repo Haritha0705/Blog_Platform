@@ -26,6 +26,13 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import PublicOutlinedIcon from '@mui/icons-material/Public';
 import {useState} from "react";
+import { useAuth } from '@/lib/auth-context';
+import { useMutation } from '@apollo/client/react';
+import { UPDATE_USER } from '@/lib/graphql/operations';
+import { toast } from 'sonner';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyData = any;
 
 interface SettingsPageProps {
   setCurrentPage: (page: string) => void;
@@ -34,7 +41,23 @@ interface SettingsPageProps {
 const MotionCard = motion(Card);
 
 export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
+  const { user } = useAuth();
+  const [updateUser] = useMutation<AnyData>(UPDATE_USER);
   const [tab, setTab] = useState(0);
+  const [name, setName] = useState(user?.name || '');
+  const [bio, setBio] = useState(user?.bio || '');
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    try {
+      await updateUser({
+        variables: { updateUserInput: { id: user.id, name, bio } },
+      });
+      toast.success('Profile updated!');
+    } catch {
+      toast.error('Failed to update profile');
+    }
+  };
 
   return (
       <Box sx={{ minHeight: '100vh', bgcolor: 'grey.100', py: 6, px: 2 }}>
@@ -112,8 +135,8 @@ export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
 
                   {/* Name */}
                   <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-                    <TextField label="First Name" defaultValue="Sarah" fullWidth />
-                    <TextField label="Last Name" defaultValue="Johnson" fullWidth />
+                    <TextField label="Full Name" value={name} onChange={(e) => setName(e.target.value)} fullWidth />
+                    <TextField label="Email" defaultValue={user?.email || ''} fullWidth disabled />
                   </Stack>
 
                   {/* Bio */}
@@ -123,7 +146,8 @@ export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
                         multiline
                         rows={3}
                         fullWidth
-                        defaultValue="Senior Software Engineer and Tech Writer. Passionate about web technologies and developer experience."
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
                         inputProps={{ maxLength: 200 }}
                     />
                     <Typography variant="caption" color="text.secondary">
@@ -162,7 +186,7 @@ export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
 
                   <Stack direction="row" justifyContent="flex-end" spacing={2}>
                     <Button variant="outlined">Cancel</Button>
-                    <Button variant="contained">Save Changes</Button>
+                    <Button variant="contained" onClick={handleSaveProfile}>Save Changes</Button>
                   </Stack>
                 </Stack>
               </MotionCard>

@@ -23,10 +23,15 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 import {
   featuredPost,
-  latestPosts,
+  latestPosts as staticLatestPosts,
   popularPosts,
   categories,
 } from '@/data/content';
+import { useQuery } from '@apollo/client/react';
+import { GET_POSTS } from '@/lib/graphql/operations';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyData = any;
 
 interface HomePageProps {
   setCurrentPage: (page: string) => void;
@@ -39,6 +44,22 @@ export default function HomePage({
                                    setCurrentPage,
                                    setSelectedPost,
                                  }: HomePageProps) {
+  const { data } = useQuery<AnyData>(GET_POSTS);
+
+  const backendPosts = data?.posts?.map((p: { id: number; title: string; content: string; thumbnail?: string; author?: { name: string; avatar?: string }; createdAt: string }) => ({
+    id: String(p.id),
+    title: p.title,
+    excerpt: p.content.substring(0, 120) + '...',
+    category: 'Technology',
+    author: p.author?.name || 'Unknown',
+    authorAvatar: p.author?.avatar || '',
+    date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    readTime: `${Math.ceil(p.content.split(' ').length / 200)} min`,
+    image: p.thumbnail || 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?w=600',
+  })) || [];
+
+  const latestPosts = backendPosts.length > 0 ? backendPosts.slice(0, 6) : staticLatestPosts;
+
   const handlePostClick = (postId: string) => {
     setSelectedPost?.(postId);
     setCurrentPage('post');
@@ -160,7 +181,7 @@ export default function HomePage({
           </Stack>
 
           <Grid container spacing={4}>
-            {latestPosts.map((post) => (
+            {latestPosts.map((post: { id: string; title: string; excerpt: string; category: string; author: string; date: string; readTime: string; image: string }) => (
                 <Grid container spacing={{ xs:12, lg:4, md:6 }} key={post.id}>
                   <MotionCard
                       whileHover={{ y: -6 }}

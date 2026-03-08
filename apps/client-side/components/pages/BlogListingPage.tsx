@@ -1,36 +1,35 @@
 'use client';
 
-import Image from 'next/image';
-import { motion } from 'framer-motion';
 import {
   Box,
   Container,
   Typography,
   Button,
   Card,
-  CardContent,
-  CardMedia,
   Chip,
   TextField,
   IconButton,
   Stack,
-  Divider,
-  MenuItem,
   Select,
+  MenuItem,
+  CircularProgress,
 } from '@mui/material';
 
 import {
   GridView,
   ViewList,
   Tune,
-  AccessTime,
-  CalendarMonth,
   Search,
 } from '@mui/icons-material';
 
 import { blogPosts } from '@/data/content';
 import { useState } from 'react';
 import { BlogPostCard } from '@/components/ui/BlogPostCard';
+import { useQuery } from '@apollo/client/react';
+import { GET_POSTS } from '@/lib/graphql/operations';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyData = any;
 
 interface BlogListingPageProps {
   setCurrentPage: (page: string) => void;
@@ -45,6 +44,8 @@ export function BlogListingPage({
   const [searchQuery, setSearchQuery] = useState('');
   const [sort, setSort] = useState('latest');
 
+  const { data, loading } = useQuery<AnyData>(GET_POSTS);
+
   const LayoutComponent = viewMode === 'grid' ? Box : Stack;
 
   const categories = ['All', 'Technology', 'Development', 'Design', 'Writing', 'Performance'];
@@ -54,6 +55,25 @@ export function BlogListingPage({
     setSelectedPost?.(postId);
     setCurrentPage('post');
   };
+
+  // Merge backend posts with static fallback
+  const backendPosts = data?.posts?.map((p: { id: number; title: string; content: string; thumbnail?: string; views: number; author?: { name: string; avatar?: string }; createdAt: string }) => ({
+    id: String(p.id),
+    title: p.title,
+    excerpt: p.content.substring(0, 150) + '...',
+    category: 'Technology',
+    author: p.author?.name || 'Unknown',
+    authorAvatar: p.author?.avatar || '',
+    date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    readTime: `${Math.ceil(p.content.split(' ').length / 200)} min`,
+    image: p.thumbnail || 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?w=600',
+  })) || [];
+
+  const allPosts = backendPosts.length > 0 ? backendPosts : blogPosts;
+
+  const filteredPosts = allPosts.filter((post: { title: string }) =>
+    post.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
       <Box minHeight="100vh">
@@ -142,28 +162,37 @@ export function BlogListingPage({
                 </Stack>
               </Stack>
 
+              {/* Loading */}
+              {loading && (
+                <Box display="flex" justifyContent="center" py={6}>
+                  <CircularProgress />
+                </Box>
+              )}
+
               {/* ================= POSTS ================= */}
-              <LayoutComponent
-                  {...(viewMode === 'grid'
-                      ? {
-                        display: 'grid',
-                        gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-                        gap: 4,
-                        alignItems: 'stretch',
-                      }
-                      : {
-                        spacing: 3,
-                      })}
-                  mb={6}
-              >
-                {blogPosts.map((post) => (
-                    <BlogPostCard
-                        key={post.id}
-                        post={post}
-                        onClick={handlePostClick}
-                    />
-                ))}
-              </LayoutComponent>
+              {!loading && (
+                <LayoutComponent
+                    {...(viewMode === 'grid'
+                        ? {
+                          display: 'grid',
+                          gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+                          gap: 4,
+                          alignItems: 'stretch',
+                        }
+                        : {
+                          spacing: 3,
+                        })}
+                    mb={6}
+                >
+                  {filteredPosts.map((post: { id: string; title: string; excerpt: string; category: string; author: string; date: string; readTime: string; image: string }) => (
+                      <BlogPostCard
+                          key={post.id}
+                          post={post}
+                          onClick={handlePostClick}
+                      />
+                  ))}
+                </LayoutComponent>
+              )}
 
               {/* Pagination */}
               <Stack direction="row" justifyContent="center" spacing={1}>

@@ -30,8 +30,7 @@ interface HeaderProps {
   toggleDarkMode: () => void;
   currentPage: string;
   setCurrentPage: (page: string) => void;
-  isAuthenticated: boolean;
-  setIsAuthenticated: (value: boolean) => void;
+  isAuthenticated: boolean;onLogout: () => void;
   onSearch?: (query: string) => void;
 }
 
@@ -41,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
                                                 currentPage,
                                                 setCurrentPage,
                                                 isAuthenticated,
-                                                setIsAuthenticated,
+                                                onLogout,
                                                 onSearch,
                                               }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -69,7 +68,7 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const handleLogout = () => {
-    setIsAuthenticated(false);
+    onLogout();
     setCurrentPage('home');
     handleUserMenuClose();
   };
