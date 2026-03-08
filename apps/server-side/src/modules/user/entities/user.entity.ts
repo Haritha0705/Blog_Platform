@@ -16,4 +16,7 @@ export class User {
 
   @Field({ nullable: true })
   avatar?: string;
+
+  @Field(() => Date)
+  createdAt!: Date;
 }

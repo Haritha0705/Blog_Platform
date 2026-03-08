@@ -2,15 +2,14 @@ import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { LikeService } from './like.service.js';
 import { Like } from './entities/like.entity.js';
 import { CreateLikeInput } from './dto/create-like.input.js';
-import { UpdateLikeInput } from './dto/update-like.input.js';
 
 @Resolver(() => Like)
 export class LikeResolver {
   constructor(private readonly likeService: LikeService) {}
 
   @Mutation(() => Like)
-  createLike(@Args('createLikeInput') createLikeInput: CreateLikeInput) {
-    return this.likeService.create(createLikeInput);
+  toggleLike(@Args('createLikeInput') createLikeInput: CreateLikeInput) {
+    return this.likeService.toggleLike(createLikeInput);
   }
 
   @Query(() => [Like], { name: 'likes' })
@@ -18,14 +17,9 @@ export class LikeResolver {
     return this.likeService.findAll();
   }
 
-  @Query(() => Like, { name: 'like' })
+  @Query(() => Like, { name: 'like', nullable: true })
   findOne(@Args('id', { type: () => Int }) id: number) {
     return this.likeService.findOne(id);
-  }
-
-  @Mutation(() => Like)
-  updateLike(@Args('updateLikeInput') updateLikeInput: UpdateLikeInput) {
-    return this.likeService.update(updateLikeInput.id, updateLikeInput);
   }
 
   @Mutation(() => Like)

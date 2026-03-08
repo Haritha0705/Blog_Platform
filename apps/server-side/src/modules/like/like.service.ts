@@ -1,26 +1,49 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../config/prisma/prisma.service.js';
 import { CreateLikeInput } from './dto/create-like.input.js';
-import { UpdateLikeInput } from './dto/update-like.input.js';
 
 @Injectable()
 export class LikeService {
-  create(createLikeInput: CreateLikeInput) {
-    return 'This action adds a new like';
+  constructor(private prisma: PrismaService) {}
+
+  async toggleLike(createLikeInput: CreateLikeInput) {
+    const existing = await this.prisma.like.findUnique({
+      where: {
+        userId_postId: {
+          userId: createLikeInput.userId,
+          postId: createLikeInput.postId,
+        },
+      },
+    });
+
+    if (existing) {
+      return this.prisma.like.delete({ where: { id: existing.id } });
+    }
+
+    return this.prisma.like.create({ data: createLikeInput });
   }
 
-  findAll() {
-    return `This action returns all like`;
+  async create(createLikeInput: CreateLikeInput) {
+    return this.toggleLike(createLikeInput);
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} like`;
+  async findAll() {
+    return this.prisma.like.findMany();
   }
 
-  update(id: number, updateLikeInput: UpdateLikeInput) {
-    return `This action updates a #${id} like`;
+  async findOne(id: number) {
+    return this.prisma.like.findUnique({ where: { id } });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} like`;
+  async findByPost(postId: number) {
+    return this.prisma.like.findMany({ where: { postId } });
+  }
+
+  async countByPost(postId: number) {
+    return this.prisma.like.count({ where: { postId } });
+  }
+
+  async remove(id: number) {
+    return this.prisma.like.delete({ where: { id } });
   }
 }

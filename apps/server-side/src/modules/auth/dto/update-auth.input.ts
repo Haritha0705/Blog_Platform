@@ -1,8 +1,24 @@
-import { CreateAuthInput } from './create-auth.input.js';
-import { InputType, Field, Int, PartialType } from '@nestjs/graphql';
+import { InputType, Field } from '@nestjs/graphql';
+import { IsEmail, MinLength, IsOptional } from 'class-validator';
 
 @InputType()
-export class UpdateAuthInput extends PartialType(CreateAuthInput) {
-  @Field(() => Int)
-  id!: number;
+export class RegisterInput {
+  @Field()
+  name!: string;
+
+  @Field()
+  @IsEmail()
+  email!: string;
+
+  @Field()
+  @MinLength(6)
+  password!: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  bio?: string;
+
+  @Field({ nullable: true })
+  @IsOptional()
+  avatar?: string;
 }

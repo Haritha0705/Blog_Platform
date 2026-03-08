@@ -2,14 +2,13 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Post {
+type User {
   id: Int!
-  title: String!
-  slug: String
-  published: Boolean!
-  authorId: Int!
+  name: String!
+  email: String!
+  bio: String
+  avatar: String
   createdAt: DateTime!
-  updatedAt: DateTime!
 }
 
 """
@@ -17,12 +16,20 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
-type User {
+type Post {
   id: Int!
-  name: String!
-  email: String!
-  bio: String
-  avatar: String
+  title: String!
+  slug: String
+  content: String!
+  thumbnail: String
+  views: Int!
+  published: Boolean!
+  authorId: Int!
+  author: User
+  likesCount: Int!
+  commentsCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Comment {
@@ -30,6 +37,9 @@ type Comment {
   content: String!
   authorId: Int!
   postId: Int!
+  author: User
+  createdAt: DateTime!
+  updatedAt: DateTime!
 }
 
 type Tag {
@@ -45,36 +55,65 @@ type Like {
   updatedAt: DateTime!
 }
 
-type Auth {
-  """Example field (placeholder)"""
-  exampleField: Int!
+type AuthPayload {
+  accessToken: String!
+  user: User!
 }
 
 type Query {
   posts: [Post!]!
+  post(id: Int!): Post!
+  postBySlug(slug: String!): Post
+  postsByAuthor(authorId: Int!): [Post!]!
+  searchPosts(query: String!): [Post!]!
+  users: [User!]!
+  user(id: Int!): User!
   comments: [Comment!]!
   comment(id: Int!): Comment!
+  commentsByPost(postId: Int!): [Comment!]!
   tags: [Tag!]!
   tag(id: Int!): Tag!
   likes: [Like!]!
-  like(id: Int!): Like!
-  auth(id: Int!): Auth!
+  like(id: Int!): Like
+  me(userId: Int!): User
 }
 
 type Mutation {
+  createPost(createPostInput: CreatePostInput!): Post!
+  updatePost(updatePostInput: UpdatePostInput!): Post!
+  removePost(id: Int!): Post!
   createUser(createUserInput: CreateUserInput!): User!
+  updateUser(updateUserInput: UpdateUserInput!): User!
   createComment(createCommentInput: CreateCommentInput!): Comment!
   updateComment(updateCommentInput: UpdateCommentInput!): Comment!
   removeComment(id: Int!): Comment!
   createTag(createTagInput: CreateTagInput!): Tag!
   updateTag(updateTagInput: UpdateTagInput!): Tag!
   removeTag(id: Int!): Tag!
-  createLike(createLikeInput: CreateLikeInput!): Like!
-  updateLike(updateLikeInput: UpdateLikeInput!): Like!
+  toggleLike(createLikeInput: CreateLikeInput!): Like!
   removeLike(id: Int!): Like!
-  createAuth(createAuthInput: CreateAuthInput!): Auth!
-  updateAuth(updateAuthInput: UpdateAuthInput!): Auth!
-  removeAuth(id: Int!): Auth!
+  login(loginInput: LoginInput!): AuthPayload!
+  register(registerInput: RegisterInput!): AuthPayload!
+}
+
+input CreatePostInput {
+  title: String!
+  content: String!
+  thumbnail: String
+  slug: String
+  published: Boolean = false
+  authorId: Int!
+  tags: [String!]
+}
+
+input UpdatePostInput {
+  title: String
+  content: String
+  thumbnail: String
+  slug: String
+  published: Boolean = false
+  tags: [String!]
+  id: Int!
 }
 
 input CreateUserInput {
@@ -85,46 +124,49 @@ input CreateUserInput {
   avatar: String
 }
 
-input CreateCommentInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateCommentInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+input UpdateUserInput {
+  name: String
+  password: String
+  email: String
+  bio: String
+  avatar: String
   id: Int!
 }
 
+input CreateCommentInput {
+  content: String!
+  postId: Int!
+  authorId: Int!
+}
+
+input UpdateCommentInput {
+  id: Int!
+  content: String!
+}
+
 input CreateTagInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  name: String!
 }
 
 input UpdateTagInput {
-  """Example field (placeholder)"""
-  exampleField: Int
+  name: String
   id: Int!
 }
 
 input CreateLikeInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
+  userId: Int!
+  postId: Int!
 }
 
-input UpdateLikeInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+input LoginInput {
+  email: String!
+  password: String!
 }
 
-input CreateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int!
-}
-
-input UpdateAuthInput {
-  """Example field (placeholder)"""
-  exampleField: Int
-  id: Int!
+input RegisterInput {
+  name: String!
+  email: String!
+  password: String!
+  bio: String
+  avatar: String
 }

@@ -25,6 +25,11 @@ export class CommentResolver {
     return this.commentService.findOne(id);
   }
 
+  @Query(() => [Comment], { name: 'commentsByPost' })
+  findByPost(@Args('postId', { type: () => Int }) postId: number) {
+    return this.commentService.findByPost(postId);
+  }
+
   @Mutation(() => Comment)
   updateComment(
     @Args('updateCommentInput') updateCommentInput: UpdateCommentInput,

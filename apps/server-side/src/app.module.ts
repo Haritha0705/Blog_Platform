@@ -17,7 +17,10 @@ import { AuthModule } from './modules/auth/auth.module.js';
     PrismaModule,
     GraphQLModule.forRoot(<ApolloDriverConfig>{
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), "src/graphql/schema.gql"),
+      autoSchemaFile: join(process.cwd(), 'src/graphql/schema.gql'),
+      playground: true,
+      introspection: true,
+      path: '/graphql',
     }),
     PostModule,
     UserModule,
