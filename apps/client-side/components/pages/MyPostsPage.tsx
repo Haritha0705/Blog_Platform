@@ -20,6 +20,7 @@ import {
   MenuItem,
   IconButton,
   Divider,
+  alpha,
 } from '@mui/material';
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -28,6 +29,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 
 import { myPosts } from '@/data/content';
 import {useState} from "react";
@@ -57,7 +59,6 @@ export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
   });
   const [deletePost] = useMutation<AnyData>(DELETE_POST);
 
-  // Map backend posts to display format
   const backendPosts = data?.postsByAuthor?.map((p: { id: number; title: string; published: boolean; createdAt: string; views: number; likesCount: number; commentsCount: number }) => ({
     id: String(p.id),
     title: p.title,
@@ -71,11 +72,8 @@ export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
   const allPosts = backendPosts.length > 0 ? backendPosts : myPosts;
 
   const filteredPosts = allPosts.filter((post: { title: string; status: string }) => {
-    const matchesSearch = post.title
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-    const matchesFilter =
-        filterStatus === 'all' || post.status === filterStatus;
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = filterStatus === 'all' || post.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
 
@@ -91,220 +89,261 @@ export default function MyPostsPage({ setCurrentPage }: MyPostsPageProps) {
 
   const toggleSelectAll = () => {
     setSelectedPosts(
-        selectedPosts.length === filteredPosts.length
-            ? []
-            : filteredPosts.map((p: { id: string }) => p.id)
+      selectedPosts.length === filteredPosts.length
+        ? []
+        : filteredPosts.map((p: { id: string }) => p.id)
     );
   };
 
   const toggleSelectPost = (id: string) => {
     setSelectedPosts((prev) =>
-        prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
+      prev.includes(id) ? prev.filter((p) => p !== id) : [...prev, id]
     );
   };
 
   return (
-      <Box sx={{ minHeight: '100vh', bgcolor: 'grey.100', py: 6, px: 2 }}>
-        <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-          {/* Header */}
-          <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              justifyContent="space-between"
-              alignItems={{ sm: 'center' }}
-              spacing={2}
-              mb={4}
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)', py: { xs: 4, md: 6 }, px: 2 }}>
+      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+        {/* Header */}
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ sm: 'center' }}
+          spacing={2}
+          mb={5}
+        >
+          <Box>
+            <Typography variant="h4" fontWeight={800} letterSpacing="-0.02em">
+              My Posts
+            </Typography>
+            <Typography color="text.secondary" fontSize="0.95rem">
+              Manage and track your content
+            </Typography>
+          </Box>
+
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setCurrentPage('editor')}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 600,
+              borderRadius: '12px',
+              px: 3,
+              py: 1.2,
+              background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.3)',
+              '&:hover': {
+                boxShadow: '0 6px 20px rgba(99, 102, 241, 0.4)',
+                background: 'linear-gradient(135deg, #5558E8 0%, #7C4FE0 100%)',
+              },
+            }}
           >
-            <Box>
-              <Typography variant="h4" fontWeight={700}>
-                My Posts
-              </Typography>
-              <Typography color="text.secondary">
-                Manage and track your content
-              </Typography>
-            </Box>
+            New Post
+          </Button>
+        </Stack>
+
+        {/* Filters */}
+        <MotionCard
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          sx={{
+            p: 3,
+            mb: 4,
+            borderRadius: '16px',
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 'none',
+          }}
+        >
+          <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2}>
+            <TextField
+              fullWidth
+              placeholder="Search posts..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
+              slotProps={{
+                input: {
+                  startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.disabled' }} />,
+                },
+              }}
+            />
+
+            <Select
+              value={filterStatus}
+              onChange={(e) => setFilterStatus(e.target.value as never)}
+              sx={{ width: 180, borderRadius: '12px', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '12px' } }}
+            >
+              <MenuItem value="all">All Posts</MenuItem>
+              <MenuItem value="published">Published</MenuItem>
+              <MenuItem value="draft">Drafts</MenuItem>
+            </Select>
 
             <Button
-                variant="contained"
-                startIcon={<AddIcon />}
-                onClick={() => setCurrentPage('editor')}
+              variant="outlined"
+              startIcon={<FilterAltOutlinedIcon />}
+              sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: 'divider', color: 'text.secondary' }}
             >
-              New Post
+              More Filters
             </Button>
           </Stack>
 
-          {/* Filters */}
-          <MotionCard
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              sx={{ p: 3, mb: 4 }}
-          >
-            <Stack direction={{ xs: 'column', lg: 'row' }} spacing={2}>
-              <TextField
-                  fullWidth
-                  placeholder="Search posts..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  slotProps={{
-                    input: {
-                      startAdornment: <SearchIcon sx={{ mr: 1 }} />,
-                    },
-                  }}
-              />
+          {selectedPosts.length > 0 && (
+            <>
+              <Divider sx={{ my: 2.5, borderColor: (theme) => alpha(theme.palette.divider, 0.5) }} />
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Typography color="text.secondary" fontSize="0.875rem">
+                  {selectedPosts.length} selected
+                </Typography>
+                <Button size="small" variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>
+                  Bulk Edit
+                </Button>
+                <Button size="small" variant="outlined" color="error" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>
+                  Delete Selected
+                </Button>
+              </Stack>
+            </>
+          )}
+        </MotionCard>
 
-              <Select
-                  value={filterStatus}
-                  onChange={(e) =>
-                      setFilterStatus(e.target.value as never)
-                  }
-                  sx={{ width: 180 }}
-              >
-                <MenuItem value="all">All Posts</MenuItem>
-                <MenuItem value="published">Published</MenuItem>
-                <MenuItem value="draft">Drafts</MenuItem>
-              </Select>
+        {/* Desktop Table */}
+        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+          <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none', overflow: 'hidden' }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: '#FAFBFC' }}>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={filteredPosts.length > 0 && selectedPosts.length === filteredPosts.length}
+                        onChange={toggleSelectAll}
+                      />
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.secondary', letterSpacing: '0.03em' }}>Title</TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.secondary', letterSpacing: '0.03em' }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.secondary', letterSpacing: '0.03em' }}>Date</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.secondary', letterSpacing: '0.03em' }}>Views</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.secondary', letterSpacing: '0.03em' }}>Comments</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 600, fontSize: '0.8rem', color: 'text.secondary', letterSpacing: '0.03em' }}>Likes</TableCell>
+                    <TableCell />
+                  </TableRow>
+                </TableHead>
 
-              <Button variant="outlined" startIcon={<FilterAltOutlinedIcon />}>
-                More Filters
-              </Button>
-            </Stack>
-
-            {selectedPosts.length > 0 && (
-                <>
-                  <Divider sx={{ my: 3 }} />
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Typography color="text.secondary">
-                      {selectedPosts.length} selected
-                    </Typography>
-                    <Button size="small" variant="outlined">
-                      Bulk Edit
-                    </Button>
-                    <Button
-                        size="small"
-                        variant="outlined"
-                        color="error"
+                <TableBody>
+                  {filteredPosts.map((post: { id: string; title: string; status: string; date: string; views: string | number; comments: number; likes: number }) => (
+                    <TableRow
+                      key={post.id}
+                      hover
+                      sx={{
+                        '&:hover': { bgcolor: (theme) => alpha(theme.palette.primary.main, 0.02) },
+                        transition: 'background-color 0.15s',
+                      }}
                     >
-                      Delete Selected
-                    </Button>
-                  </Stack>
-                </>
-            )}
-          </MotionCard>
-
-          {/* Desktop Table */}
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
-            <Card>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
                       <TableCell padding="checkbox">
                         <Checkbox
-                            checked={
-                                filteredPosts.length > 0 &&
-                                selectedPosts.length === filteredPosts.length
-                            }
-                            onChange={toggleSelectAll}
+                          checked={selectedPosts.includes(post.id)}
+                          onChange={() => toggleSelectPost(post.id)}
                         />
                       </TableCell>
-                      <TableCell>Title</TableCell>
-                      <TableCell>Status</TableCell>
-                      <TableCell>Date</TableCell>
-                      <TableCell align="right">Views</TableCell>
-                      <TableCell align="right">Comments</TableCell>
-                      <TableCell align="right">Likes</TableCell>
-                      <TableCell />
+
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.9rem' }}>
+                        {post.title}
+                      </TableCell>
+
+                      <TableCell>
+                        <Chip
+                          size="small"
+                          label={post.status}
+                          sx={{
+                            fontWeight: 600,
+                            fontSize: '0.65rem',
+                            height: 22,
+                            borderRadius: '6px',
+                            bgcolor: post.status === 'published' ? 'rgba(16,185,129,0.08)' : 'rgba(148,163,184,0.15)',
+                            color: post.status === 'published' ? '#10B981' : '#64748B',
+                          }}
+                        />
+                      </TableCell>
+
+                      <TableCell sx={{ color: 'text.secondary', fontSize: '0.875rem' }}>
+                        {post.date}
+                      </TableCell>
+
+                      <TableCell align="right" sx={{ fontSize: '0.875rem' }}>{post.views}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem' }}>{post.comments}</TableCell>
+                      <TableCell align="right" sx={{ fontSize: '0.875rem' }}>{post.likes}</TableCell>
+
+                      <TableCell>
+                        <Stack direction="row" spacing={0.5}>
+                          {post.status === 'published' && (
+                            <IconButton size="small" sx={{ borderRadius: '8px', '&:hover': { bgcolor: (theme) => alpha(theme.palette.primary.main, 0.06) } }}>
+                              <VisibilityIcon sx={{ fontSize: 18 }} />
+                            </IconButton>
+                          )}
+                          <IconButton
+                            size="small"
+                            onClick={() => setCurrentPage('editor')}
+                            sx={{ borderRadius: '8px', '&:hover': { bgcolor: (theme) => alpha(theme.palette.primary.main, 0.06) } }}
+                          >
+                            <EditIcon sx={{ fontSize: 18 }} />
+                          </IconButton>
+                          <IconButton
+                            size="small"
+                            onClick={() => handleDeletePost(post.id)}
+                            sx={{ borderRadius: '8px', '&:hover': { bgcolor: 'rgba(239,68,68,0.06)', color: 'error.main' } }}
+                          >
+                            <DeleteIcon sx={{ fontSize: 18 }} />
+                          </IconButton>
+                        </Stack>
+                      </TableCell>
                     </TableRow>
-                  </TableHead>
-
-                  <TableBody>
-                    {filteredPosts.map((post: { id: string; title: string; status: string; date: string; views: string | number; comments: number; likes: number }) => (
-                        <TableRow key={post.id} hover>
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                                checked={selectedPosts.includes(post.id)}
-                                onChange={() => toggleSelectPost(post.id)}
-                            />
-                          </TableCell>
-
-                          <TableCell sx={{ fontWeight: 500 }}>
-                            {post.title}
-                          </TableCell>
-
-                          <TableCell>
-                            <Chip
-                                size="small"
-                                label={post.status}
-                                color={
-                                  post.status === 'published'
-                                      ? 'success'
-                                      : 'default'
-                                }
-                            />
-                          </TableCell>
-
-                          <TableCell color="text.secondary">
-                            {post.date}
-                          </TableCell>
-
-                          <TableCell align="right">{post.views}</TableCell>
-                          <TableCell align="right">{post.comments}</TableCell>
-                          <TableCell align="right">{post.likes}</TableCell>
-
-                          <TableCell>
-                            <Stack direction="row" spacing={1}>
-                              {post.status === 'published' && (
-                                  <IconButton size="small">
-                                    <VisibilityIcon />
-                                  </IconButton>
-                              )}
-                              <IconButton
-                                  size="small"
-                                  onClick={() => setCurrentPage('editor')}
-                              >
-                                <EditIcon />
-                              </IconButton>
-                              <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDeletePost(post.id)}
-                              >
-                                <DeleteIcon />
-                              </IconButton>
-                            </Stack>
-                          </TableCell>
-                        </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Card>
-          </Box>
-
-          {/* Empty State */}
-          {filteredPosts.length === 0 && (
-              <Card sx={{ p: 6, textAlign: 'center', mt: 4 }}>
-                <SearchIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
-                <Typography variant="h6" fontWeight={600}>
-                  No posts found
-                </Typography>
-                <Typography color="text.secondary" mb={3}>
-                  {searchQuery
-                      ? 'Try adjusting your search or filters'
-                      : 'Start creating your first post'}
-                </Typography>
-
-                {!searchQuery && (
-                    <Button
-                        variant="contained"
-                        startIcon={<AddIcon />}
-                        onClick={() => setCurrentPage('editor')}
-                    >
-                      Create Your First Post
-                    </Button>
-                )}
-              </Card>
-          )}
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Card>
         </Box>
+
+        {/* Empty State */}
+        {filteredPosts.length === 0 && (
+          <Card sx={{
+            p: 6,
+            textAlign: 'center',
+            mt: 4,
+            borderRadius: '16px',
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: 'none',
+          }}>
+            <DescriptionOutlinedIcon sx={{ fontSize: 56, color: 'text.disabled', mb: 2 }} />
+            <Typography variant="h6" fontWeight={700} mb={1}>
+              No posts found
+            </Typography>
+            <Typography color="text.secondary" mb={3} variant="body2">
+              {searchQuery
+                ? 'Try adjusting your search or filters'
+                : 'Start creating your first post'}
+            </Typography>
+
+            {!searchQuery && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => setCurrentPage('editor')}
+                sx={{
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  borderRadius: '10px',
+                  background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+                }}
+              >
+                Create Your First Post
+              </Button>
+            )}
+          </Card>
+        )}
       </Box>
+    </Box>
   );
 }

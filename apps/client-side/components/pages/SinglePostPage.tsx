@@ -12,6 +12,7 @@ import {
   Stack,
   Chip,
   TextField,
+  alpha,
 } from '@mui/material';
 
 import {
@@ -145,7 +146,7 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
     : staticComments;
 
   return (
-      <Box sx={{ minHeight: '100vh', py: 6, px: 2 }}>
+      <Box sx={{ minHeight: '100vh', py: 6, px: 2, background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)' }}>
         <Box sx={{ maxWidth: 1280, mx: 'auto' }}>
           <Stack direction={{ xs: 'column', lg: 'row' }} spacing={6}>
             {/* Main Content */}
@@ -156,13 +157,24 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
                     startIcon={<ChevronLeftIcon />}
                     onClick={() => setCurrentPage('blog')}
                     variant="text"
+                    sx={{ textTransform: 'none', fontWeight: 500, borderRadius: '10px' }}
                 >
                   Back to Articles
                 </Button>
 
-                <Chip label={singlePost.category} />
+                <Chip
+                  label={singlePost.category}
+                  sx={{
+                    fontWeight: 600,
+                    fontSize: '0.75rem',
+                    bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                    color: 'primary.main',
+                    borderRadius: '10px',
+                    alignSelf: 'flex-start',
+                  }}
+                />
 
-                <Typography variant="h3" fontWeight={700}>
+                <Typography variant="h3" fontWeight={800} letterSpacing="-0.02em" lineHeight={1.2}>
                   {singlePost.title}
                 </Typography>
 
@@ -193,20 +205,20 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
 
                 {/* Share Buttons */}
                 <Stack direction="row" spacing={1} alignItems="center" py={2}>
-                  <Button startIcon={<ShareIcon />} size="small" variant="outlined">
+                  <Button startIcon={<ShareIcon />} size="small" variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, borderColor: 'divider' }}>
                     Share
                   </Button>
-                  <Button size="small" variant="outlined">
-                    <TwitterIcon />
+                  <Button size="small" variant="outlined" sx={{ borderRadius: '10px', minWidth: 36, borderColor: 'divider' }}>
+                    <TwitterIcon sx={{ fontSize: 18 }} />
                   </Button>
-                  <Button size="small" variant="outlined">
-                    <FacebookIcon />
+                  <Button size="small" variant="outlined" sx={{ borderRadius: '10px', minWidth: 36, borderColor: 'divider' }}>
+                    <FacebookIcon sx={{ fontSize: 18 }} />
                   </Button>
-                  <Button size="small" variant="outlined">
-                    <LinkedInIcon />
+                  <Button size="small" variant="outlined" sx={{ borderRadius: '10px', minWidth: 36, borderColor: 'divider' }}>
+                    <LinkedInIcon sx={{ fontSize: 18 }} />
                   </Button>
-                  <Button size="small" variant="outlined">
-                    <LinkIcon />
+                  <Button size="small" variant="outlined" sx={{ borderRadius: '10px', minWidth: 36, borderColor: 'divider' }}>
+                    <LinkIcon sx={{ fontSize: 18 }} />
                   </Button>
                   <Box flexGrow={1} />
                   <Button startIcon={<BookmarkIcon />} size="small" variant="text">
@@ -219,7 +231,7 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
               <MotionCard
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  sx={{ mb: 4, borderRadius: 2, overflow: 'hidden' }}
+                  sx={{ mb: 4, borderRadius: '16px', overflow: 'hidden', border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 3px rgba(0,0,0,0.04)' }}
               >
                 <Box sx={{ position: 'relative', height: 0, paddingTop: '56.25%' }}>
                   <Image
@@ -252,7 +264,7 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
               </Stack>
 
               {/* Author Bio */}
-              <MotionCard sx={{ p: 3, mt: 6 }}>
+              <MotionCard sx={{ p: 3, mt: 6, borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
                 <Stack direction="row" spacing={2}>
                   <Avatar sx={{ width: 64, height: 64 }}>
                     <Image src={singlePost.author.avatar} alt={singlePost.author.name} fill style={{ objectFit: 'cover' }} />
@@ -263,7 +275,7 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
                         <Typography fontWeight={600}>{singlePost.author.name}</Typography>
                         <Typography variant="caption">{singlePost.author.followers} followers</Typography>
                       </Box>
-                      <Button size="small" variant="contained">
+                      <Button size="small" variant="contained" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)' }}>
                         Follow
                       </Button>
                     </Stack>
@@ -304,7 +316,7 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
                 </Typography>
 
                 {/* Add Comment */}
-                <MotionCard sx={{ p: 2, mb: 2 }}>
+                <MotionCard sx={{ p: 2.5, mb: 2, borderRadius: '14px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
                   <TextField
                       fullWidth
                       placeholder="Share your thoughts..."
@@ -312,9 +324,20 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
                       minRows={3}
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
+                      sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
                   />
-                  <Box textAlign="right" mt={1}>
-                    <Button variant="contained" size="small" onClick={handlePostComment}>
+                  <Box textAlign="right" mt={1.5}>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={handlePostComment}
+                      sx={{
+                        borderRadius: '10px',
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+                      }}
+                    >
                       Post Comment
                     </Button>
                   </Box>
@@ -352,8 +375,8 @@ export default function SinglePostPage({ setCurrentPage, postId }: SinglePostPag
 
             {/* Sidebar - Table of Contents */}
             <Box flexShrink={0} width={256} display={{ xs: 'none', lg: 'block' }}>
-              <MotionCard sx={{ p: 2, position: 'sticky', top: 24 }}>
-                <Typography fontWeight={600} mb={1}>
+              <MotionCard sx={{ p: 2.5, position: 'sticky', top: 80, borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                <Typography fontWeight={700} mb={1.5} fontSize="0.95rem">
                   Table of Contents
                 </Typography>
                 <Stack spacing={1}>

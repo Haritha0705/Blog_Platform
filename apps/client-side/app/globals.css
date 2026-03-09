@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @custom-variant dark (&:is(.dark *));
@@ -7,9 +7,9 @@
     --font-size: 16px;
 
     /* Brand Colors */
-    --indigo-500: #4F46E5;
-    --indigo-600: #4338CA;
-    --indigo-700: #3730A3;
+    --indigo-500: #6366F1;
+    --indigo-600: #4F46E5;
+    --indigo-700: #4338CA;
     --coral-500: #F97316;
     --coral-600: #EA580C;
 
@@ -154,16 +154,49 @@
     body {
         @apply bg-background text-foreground;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
     }
 
     /* Article Typography */
     .article-content {
-        font-family: 'Source Serif Pro', Georgia, serif;
+        font-family: 'Playfair Display', Georgia, serif;
     }
 
     /* Code Typography */
     code, pre {
         font-family: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    /* Smooth global transitions */
+    a, button {
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--slate-100);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--slate-300);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--slate-400);
+    }
+
+    /* Selection color */
+    ::selection {
+        background: rgba(99, 102, 241, 0.2);
+        color: var(--slate-900);
     }
 }
 
@@ -248,7 +281,7 @@ html {
 .article-content h4,
 .article-content h5,
 .article-content h6 {
-    font-family: ' Source Serif Pro', Georgia, serif;
+    font-family: 'Playfair Display', Georgia, serif;
     margin-top: 2rem;
     margin-bottom: 1rem;
 }

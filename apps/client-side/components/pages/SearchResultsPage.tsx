@@ -14,6 +14,7 @@ import {
   MenuItem,
   Stack,
   Divider,
+  alpha,
 } from '@mui/material';
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -77,10 +78,11 @@ export default function SearchResultsPage({
                 key={index}
                 component="mark"
                 sx={{
-                  bgcolor: 'primary.light',
-                  color: 'text.primary',
+                  bgcolor: (theme) => alpha(theme.palette.primary.main, 0.12),
+                  color: 'primary.main',
                   px: 0.5,
-                  borderRadius: 0.5,
+                  borderRadius: '4px',
+                  fontWeight: 600,
                 }}
             >
               {part}
@@ -92,11 +94,11 @@ export default function SearchResultsPage({
   };
 
   return (
-      <Box sx={{ minHeight: '100vh', bgcolor: 'grey.100', py: 6, px: 2 }}>
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)', py: { xs: 4, md: 6 }, px: 2 }}>
         <Box sx={{ maxWidth: 900, mx: 'auto' }}>
           {/* Header */}
           <Box mb={6}>
-            <Typography variant="h4" fontWeight={700} mb={3}>
+            <Typography variant="h4" fontWeight={800} letterSpacing="-0.02em" mb={3}>
               Search Results
             </Typography>
 
@@ -107,7 +109,7 @@ export default function SearchResultsPage({
                     top: '50%',
                     left: 14,
                     transform: 'translateY(-50%)',
-                    color: 'text.secondary',
+                    color: 'text.disabled',
                   }}
               />
               <TextField
@@ -117,6 +119,10 @@ export default function SearchResultsPage({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '14px',
+                      bgcolor: 'white',
+                    },
                     '& input': {
                       pl: 6,
                       height: 56,
@@ -133,13 +139,13 @@ export default function SearchResultsPage({
               spacing={2}
               mb={4}
           >
-            <Select defaultValue="relevance" sx={{ width: 180 }}>
+            <Select defaultValue="relevance" sx={{ width: 180, borderRadius: '12px', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '12px' } }}>
               <MenuItem value="relevance">Most Relevant</MenuItem>
               <MenuItem value="latest">Latest</MenuItem>
               <MenuItem value="popular">Most Popular</MenuItem>
             </Select>
 
-            <Select defaultValue="all" sx={{ width: 180 }}>
+            <Select defaultValue="all" sx={{ width: 180, borderRadius: '12px', '& .MuiOutlinedInput-notchedOutline': { borderRadius: '12px' } }}>
               <MenuItem value="all">All Categories</MenuItem>
               <MenuItem value="technology">Technology</MenuItem>
               <MenuItem value="development">Development</MenuItem>
@@ -149,6 +155,7 @@ export default function SearchResultsPage({
             <Button
                 variant="outlined"
                 startIcon={<FilterAltOutlinedIcon />}
+                sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 600, borderColor: 'divider', color: 'text.secondary' }}
             >
               More Filters
             </Button>
@@ -169,9 +176,21 @@ export default function SearchResultsPage({
                 {results.map((result: { id: string; title: string; excerpt: string; category: string; author: string; date: string; readTime: string; image: string }) => (
                     <MotionCard
                         key={result.id}
-                        whileHover={{ scale: 1.01 }}
+                        whileHover={{ y: -2 }}
                         transition={{ duration: 0.2 }}
-                        sx={{ cursor: 'pointer', overflow: 'hidden' }}
+                        sx={{
+                          cursor: 'pointer',
+                          overflow: 'hidden',
+                          borderRadius: '16px',
+                          border: '1px solid',
+                          borderColor: 'divider',
+                          boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
+                          '&:hover': {
+                            borderColor: 'primary.main',
+                            boxShadow: '0 8px 24px rgba(0,0,0,0.06)',
+                          },
+                          transition: 'all 0.25s ease',
+                        }}
                         onClick={() => handlePostClick(result.id)}
                     >
                       <Stack
@@ -184,7 +203,7 @@ export default function SearchResultsPage({
                             sx={{
                               width: { xs: '100%', sm: 200 },
                               aspectRatio: '16 / 9',
-                              borderRadius: 2,
+                              borderRadius: '12px',
                               overflow: 'hidden',
                               position: 'relative',
                               flexShrink: 0,
@@ -203,7 +222,14 @@ export default function SearchResultsPage({
                           <Chip
                               label={result.category}
                               size="small"
-                              sx={{ mb: 1 }}
+                              sx={{
+                                mb: 1,
+                                fontWeight: 600,
+                                fontSize: '0.7rem',
+                                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.08),
+                                color: 'primary.main',
+                                borderRadius: '8px',
+                              }}
                           />
 
                           <Typography
@@ -253,7 +279,7 @@ export default function SearchResultsPage({
               </Stack>
           ) : (
               /* Empty State */
-              <Card sx={{ p: 6, textAlign: 'center' }}>
+              <Card sx={{ p: 6, textAlign: 'center', borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
                 <DescriptionOutlinedIcon
                     sx={{ fontSize: 56, color: 'text.secondary', mb: 2 }}
                 />
@@ -272,12 +298,19 @@ export default function SearchResultsPage({
                   <Button
                       variant="outlined"
                       onClick={() => setCurrentPage('blog')}
+                      sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}
                   >
                     Browse Articles
                   </Button>
                   <Button
                       variant="contained"
                       onClick={() => setSearchQuery('')}
+                      sx={{
+                        borderRadius: '10px',
+                        textTransform: 'none',
+                        fontWeight: 600,
+                        background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+                      }}
                   >
                     Clear Search
                   </Button>
@@ -293,21 +326,21 @@ export default function SearchResultsPage({
                   justifyContent="center"
                   mt={4}
               >
-                <Button variant="outlined" disabled>
+                <Button variant="outlined" disabled sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>
                   Previous
                 </Button>
-                <Button variant="contained">1</Button>
-                <Button variant="outlined">2</Button>
-                <Button variant="outlined">Next</Button>
+                <Button variant="contained" sx={{ borderRadius: '10px', minWidth: 40, background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)' }}>1</Button>
+                <Button variant="outlined" sx={{ borderRadius: '10px', minWidth: 40, borderColor: 'divider' }}>2</Button>
+                <Button variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, borderColor: 'divider' }}>Next</Button>
               </Stack>
           )}
 
           {/* Search Tips */}
           {results.length === 0 && searchQuery && (
-              <Card sx={{ p: 4, mt: 4 }}>
-                <Typography fontWeight={600} mb={2}>
-                  Search Tips
-                </Typography>
+              <Card sx={{ p: 4, mt: 4, borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                  <Typography fontWeight={700} mb={2} fontSize="0.95rem">
+                    Search Tips
+                  </Typography>
                 <Typography color="text.secondary">
                   • Check spelling<br />
                   • Try broader keywords<br />

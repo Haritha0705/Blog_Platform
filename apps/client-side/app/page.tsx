@@ -19,26 +19,49 @@ import { AuthorPage } from '@/components/pages/AuthorPage';
 import SearchResultsPage from '@/components/pages/SearchResultsPage';
 
 function AppContent() {
-    const [darkMode, setDarkMode] = useState(false);
     const [currentPage, setCurrentPage] = useState<string>('home');
     const [selectedPostId, setSelectedPostId] = useState<string>('');
     const [searchQuery, setSearchQuery] = useState<string>('');
     const { isAuthenticated, logout } = useAuth();
 
-    // MUI Theme
+    // MUI Theme — light only
     const theme = createTheme({
         palette: {
-            mode: darkMode ? 'dark' : 'light',
+            mode: 'light',
             primary: {
-                main: '#4F46E5',
+                main: '#6366F1',
             },
             secondary: {
                 main: '#F97316',
             },
+            background: {
+                default: '#F8FAFC',
+                paper: '#FFFFFF',
+            },
+        },
+        typography: {
+            fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        },
+        shape: {
+            borderRadius: 12,
+        },
+        components: {
+            MuiCard: {
+                defaultProps: {
+                    elevation: 0,
+                },
+            },
+            MuiButton: {
+                styleOverrides: {
+                    root: {
+                        textTransform: 'none' as const,
+                        fontWeight: 600,
+                    },
+                },
+            },
         },
     });
 
-    const toggleDarkMode = () => setDarkMode(!darkMode);
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
@@ -77,15 +100,13 @@ function AppContent() {
             <CssBaseline />
             <Box display="flex" flexDirection="column" minHeight="100vh">
                 <Header
-                    darkMode={darkMode}
-                    toggleDarkMode={toggleDarkMode}
                     currentPage={currentPage}
                     setCurrentPage={setCurrentPage}
                     isAuthenticated={isAuthenticated}
                     onLogout={logout}
                     onSearch={handleSearch}
                 />
-                <Box component="main" flex="1" sx={{ mx: 2 }}>
+                <Box component="main" flex="1">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentPage + selectedPostId}

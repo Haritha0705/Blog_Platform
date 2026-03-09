@@ -13,6 +13,7 @@ import {
   Select,
   MenuItem,
   CircularProgress,
+  alpha,
 } from '@mui/material';
 
 import {
@@ -76,17 +77,17 @@ export function BlogListingPage({
   );
 
   return (
-      <Box minHeight="100vh">
+      <Box minHeight="100vh" sx={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)' }}>
         <Container maxWidth="lg" sx={{ py: 6 }}>
           <Stack direction={{ xs: 'column', lg: 'row' }} spacing={6}>
             {/* ================= MAIN ================= */}
             <Box flex={1}>
               {/* Header */}
-              <Box mb={4}>
-                <Typography variant="h3" fontWeight={800} mb={1}>
+              <Box mb={5}>
+                <Typography variant="h3" fontWeight={800} letterSpacing="-0.02em" mb={1}>
                   All Articles
                 </Typography>
-                <Typography color="text.secondary">
+                <Typography color="text.secondary" fontSize="1.05rem">
                   Discover insights, tutorials, and stories from our community.
                 </Typography>
               </Box>
@@ -102,12 +103,12 @@ export function BlogListingPage({
                       onChange={(e) => setSearchQuery(e.target.value)}
                       sx={{
                         '& .MuiOutlinedInput-root': {
-                          borderRadius: 4
+                          borderRadius: '12px',
                         },
                       }}
                       slotProps={{
                         input: {
-                          startAdornment: <Search sx={{ mr: 1, color: 'gray' }} />
+                          startAdornment: <Search sx={{ mr: 1, color: 'text.disabled' }} />
                         },
                       }}
                   />
@@ -115,10 +116,11 @@ export function BlogListingPage({
                   <Stack direction="row" spacing={1}>
                     <Button variant="outlined"
                             sx={{
-                              borderRadius: 4,
+                              borderRadius: '12px',
                               borderColor: 'divider',
-                              fontWeight: 'bold',
-                              color: 'black',
+                              fontWeight: 600,
+                              color: 'text.secondary',
+                              textTransform: 'none',
                             }}
                             size="small" startIcon={<Tune />}>
                       Filters
@@ -129,21 +131,23 @@ export function BlogListingPage({
                           display: 'flex',
                           border: '1px solid',
                           borderColor: 'divider',
-                          borderRadius: 4,
+                          borderRadius: '12px',
                           p: 0.5,
                         }}
                     >
                       <IconButton
                           size="small"
-                          color={viewMode === 'grid' ? 'warning' : 'default'}
+                          color={viewMode === 'grid' ? 'primary' : 'default'}
                           onClick={() => setViewMode('grid')}
+                          sx={{ borderRadius: '8px' }}
                       >
                         <GridView />
                       </IconButton>
                       <IconButton
                           size="small"
-                          color={viewMode === 'list' ? 'warning' : 'default'}
+                          color={viewMode === 'list' ? 'primary' : 'default'}
                           onClick={() => setViewMode('list')}
+                          sx={{ borderRadius: '8px' }}
                       >
                         <ViewList />
                       </IconButton>
@@ -152,11 +156,11 @@ export function BlogListingPage({
                 </Stack>
 
                 <Stack direction="row" alignItems="center" spacing={1}>
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" fontWeight={500}>
                     Sort by:
                   </Typography>
                   <Select size="small" value={sort} onChange={(e) => setSort(e.target.value)}
-                  sx={{ borderRadius: 4, width: '160px',fontSize: 15 }}>
+                  sx={{ borderRadius: '12px', width: '160px', fontSize: '0.875rem' }}>
                     <MenuItem value="latest">Latest</MenuItem>
                     <MenuItem value="popular">Most Popular</MenuItem>
                     <MenuItem value="trending">Trending</MenuItem>
@@ -198,13 +202,13 @@ export function BlogListingPage({
 
               {/* Pagination */}
               <Stack direction="row" justifyContent="center" spacing={1}>
-                <Button disabled variant="outlined">
+                <Button disabled variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>
                   Previous
                 </Button>
-                <Button variant="contained">1</Button>
-                <Button variant="outlined">2</Button>
-                <Button variant="outlined">3</Button>
-                <Button variant="outlined">Next</Button>
+                <Button variant="contained" sx={{ borderRadius: '10px', minWidth: 40, background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)' }}>1</Button>
+                <Button variant="outlined" sx={{ borderRadius: '10px', minWidth: 40, borderColor: 'divider' }}>2</Button>
+                <Button variant="outlined" sx={{ borderRadius: '10px', minWidth: 40, borderColor: 'divider' }}>3</Button>
+                <Button variant="outlined" sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, borderColor: 'divider' }}>Next</Button>
               </Stack>
             </Box>
 
@@ -212,16 +216,27 @@ export function BlogListingPage({
             <Box width={{ lg: 320 }} flexShrink={0}>
               <Stack spacing={3}>
                 {/* Categories */}
-                <Card sx={{ p: 3 }}>
-                  <Typography fontWeight={700} mb={2}>
+                <Card sx={{ p: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                  <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                     Categories
                   </Typography>
-                  <Stack spacing={1}>
+                  <Stack spacing={0.5}>
                     {categories.map((cat) => (
                         <Button
                             key={cat}
                             variant="text"
-                            sx={{ justifyContent: 'flex-start' }}
+                            sx={{
+                              justifyContent: 'flex-start',
+                              textTransform: 'none',
+                              fontWeight: 500,
+                              borderRadius: '10px',
+                              py: 1,
+                              color: 'text.secondary',
+                              '&:hover': {
+                                color: 'primary.main',
+                                bgcolor: (theme) => alpha(theme.palette.primary.main, 0.06),
+                              },
+                            }}
                         >
                           {cat}
                         </Button>
@@ -230,13 +245,29 @@ export function BlogListingPage({
                 </Card>
 
                 {/* Tags */}
-                <Card sx={{ p: 3 }}>
-                  <Typography fontWeight={700} mb={2}>
+                <Card sx={{ p: 3, borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                  <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                     Popular Tags
                   </Typography>
                   <Stack direction="row" flexWrap="wrap" gap={1}>
                     {tags.map((tag) => (
-                        <Chip key={tag} label={tag} variant="outlined" clickable />
+                        <Chip
+                          key={tag}
+                          label={tag}
+                          variant="outlined"
+                          clickable
+                          sx={{
+                            borderRadius: '8px',
+                            fontWeight: 500,
+                            fontSize: '0.8rem',
+                            borderColor: 'divider',
+                            '&:hover': {
+                              borderColor: 'primary.main',
+                              color: 'primary.main',
+                              bgcolor: (theme) => alpha(theme.palette.primary.main, 0.04),
+                            },
+                          }}
+                        />
                     ))}
                   </Stack>
                 </Card>
@@ -245,23 +276,55 @@ export function BlogListingPage({
                 <Card
                     sx={{
                       p: 3,
-                      bgcolor: 'primary.main',
-                      color: 'primary.contrastText',
+                      borderRadius: '16px',
+                      background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A78BFA 100%)',
+                      color: '#fff',
+                      boxShadow: '0 8px 24px rgba(99, 102, 241, 0.2)',
+                      position: 'relative',
+                      overflow: 'hidden',
+                      '&::before': {
+                        content: '""',
+                        position: 'absolute',
+                        top: -30,
+                        right: -30,
+                        width: 120,
+                        height: 120,
+                        borderRadius: '50%',
+                        background: 'rgba(255,255,255,0.08)',
+                      },
                     }}
                 >
-                  <Typography fontWeight={700} mb={1}>
+                  <Typography fontWeight={700} mb={1} fontSize="0.95rem">
                     Newsletter
                   </Typography>
-                  <Typography variant="body2" mb={2}>
+                  <Typography variant="body2" mb={2} sx={{ opacity: 0.85 }}>
                     Get the latest articles delivered to your inbox.
                   </Typography>
                   <TextField
                       placeholder="Your email"
                       size="small"
                       fullWidth
-                      sx={{ mb: 2, bgcolor: 'white', borderRadius: 1 }}
+                      sx={{
+                        mb: 1.5,
+                        bgcolor: 'rgba(255,255,255,0.95)',
+                        borderRadius: '10px',
+                        '& .MuiOutlinedInput-root': { borderRadius: '10px' },
+                        '& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+                      }}
                   />
-                  <Button variant="contained" fullWidth color="secondary">
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    sx={{
+                      bgcolor: '#0F172A',
+                      color: '#fff',
+                      textTransform: 'none',
+                      fontWeight: 700,
+                      borderRadius: '10px',
+                      py: 1,
+                      '&:hover': { bgcolor: '#1E293B' },
+                    }}
+                  >
                     Subscribe
                   </Button>
                 </Card>

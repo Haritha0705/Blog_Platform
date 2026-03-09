@@ -148,30 +148,68 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
   ];
 
   return (
-      <Box minHeight="100vh" bgcolor="grey.100">
+      <Box minHeight="100vh" sx={{ background: 'linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)' }}>
         {/* ================= TOP BAR ================= */}
-        <Box position="sticky" top={0} zIndex={10} bgcolor="background.paper" borderBottom={1} borderColor="divider">
+        <Box
+          position="sticky"
+          top={0}
+          zIndex={10}
+          sx={{
+            bgcolor: 'rgba(255,255,255,0.8)',
+            backdropFilter: 'blur(20px)',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          }}
+        >
           <Container maxWidth="lg">
-            <Stack direction="row" justifyContent="space-between" alignItems="center" height={56}>
+            <Stack direction="row" justifyContent="space-between" alignItems="center" height={60}>
               <Stack direction="row" spacing={2} alignItems="center">
-                <Button variant="text" size="small" onClick={() => setCurrentPage('dashboard')}>
+                <Button
+                  variant="text"
+                  size="small"
+                  onClick={() => setCurrentPage('dashboard')}
+                  sx={{ textTransform: 'none', fontWeight: 500, borderRadius: '10px' }}
+                >
                   ← Back
                 </Button>
                 {lastSaved && (
-                    <Typography variant="caption" color="text.secondary">
+                    <Typography variant="caption" color="text.disabled">
                       Saved {lastSaved.toLocaleTimeString()}
                     </Typography>
                 )}
               </Stack>
 
-              <Stack direction="row" spacing={1}>
-                <Button size="small" variant="outlined" startIcon={<Save />} onClick={handleSave}>
+              <Stack direction="row" spacing={1.5}>
+                <Button
+                  size="small"
+                  variant="outlined"
+                  startIcon={<Save />}
+                  onClick={handleSave}
+                  sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, borderColor: 'divider' }}
+                >
                   Save Draft
                 </Button>
-                <Button size="small" variant="outlined" startIcon={<Visibility />}>
+                <Button size="small" variant="outlined" startIcon={<Visibility />} sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, borderColor: 'divider' }}>
                   Preview
                 </Button>
-                <Button size="small" variant="contained" startIcon={<Send />} onClick={handlePublish} disabled={publishing}>
+                <Button
+                  size="small"
+                  variant="contained"
+                  startIcon={<Send />}
+                  onClick={handlePublish}
+                  disabled={publishing}
+                  sx={{
+                    borderRadius: '10px',
+                    textTransform: 'none',
+                    fontWeight: 600,
+                    background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%)',
+                    boxShadow: '0 2px 8px rgba(99, 102, 241, 0.25)',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, #5558E8 0%, #7C4FE0 100%)',
+                      boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
+                    },
+                  }}
+                >
                   {publishing ? 'Publishing...' : 'Publish'}
                 </Button>
               </Stack>
@@ -186,8 +224,8 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
             <Box>
               <Stack spacing={3}>
                 {/* Title */}
-                <Card>
-                  <CardContent>
+                <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                  <CardContent sx={{ p: 3 }}>
                     <TextField
                         fullWidth
                         placeholder="Post Title"
@@ -205,7 +243,7 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
                 </Card>
 
                 {/* Content */}
-                <Card>
+                <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
                   {/* Toolbar */}
                   <Stack direction="row" spacing={1} alignItems="center" p={1} borderBottom={1} borderColor="divider">
                     <Select size="small" defaultValue="paragraph">
@@ -248,9 +286,9 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
             {/* -------- Settings -------- */}
             <Stack spacing={3}>
               {/* Featured Image */}
-              <Card>
-                <CardContent>
-                  <Typography fontWeight="bold" mb={2}>
+              <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                     Featured Image
                   </Typography>
                   <Box
@@ -270,9 +308,9 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
               </Card>
 
               {/* Category */}
-              <Card>
-                <CardContent>
-                  <Typography fontWeight="bold" mb={2}>
+              <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                     Category
                   </Typography>
                   <Select fullWidth value={category} onChange={(e) => setCategory(e.target.value)}>
@@ -286,9 +324,9 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
               </Card>
 
               {/* Tags */}
-              <Card>
-                <CardContent>
-                  <Typography fontWeight="bold" mb={2}>
+              <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                     Tags
                   </Typography>
                   <TextField
@@ -313,9 +351,9 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
               </Card>
 
               {/* SEO */}
-              <Card>
-                <CardContent>
-                  <Typography fontWeight="bold" mb={2}>
+              <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                     SEO Settings
                   </Typography>
                   <Stack spacing={2}>
@@ -334,9 +372,9 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
               </Card>
 
               {/* Publish Settings */}
-              <Card>
-                <CardContent>
-                  <Typography fontWeight="bold" mb={2}>
+              <Card sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none' }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                     Publish Settings
                   </Typography>
                   <Stack spacing={2}>
