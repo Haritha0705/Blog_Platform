@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Playfair+Display:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
 
 :root {
     --font-size: 16px;
@@ -68,40 +67,6 @@
     --sidebar-accent: var(--slate-100);
     --sidebar-accent-foreground: var(--slate-900);
     --sidebar-border: var(--slate-200);
-    --sidebar-ring: var(--indigo-500);
-}
-
-.dark {
-    /* Dark Mode */
-    --background: var(--slate-900);
-    --foreground: var(--slate-100);
-    --card: var(--slate-800);
-    --card-foreground: var(--slate-100);
-    --popover: var(--slate-800);
-    --popover-foreground: var(--slate-100);
-    --primary: var(--indigo-500);
-    --primary-foreground: #ffffff;
-    --secondary: var(--coral-500);
-    --secondary-foreground: #ffffff;
-    --muted: var(--slate-800);
-    --muted-foreground: var(--slate-400);
-    --accent: var(--slate-800);
-    --accent-foreground: var(--slate-100);
-    --destructive: #EF4444;
-    --destructive-foreground: #ffffff;
-    --border: var(--slate-700);
-    --input: var(--slate-700);
-    --input-background: var(--slate-800);
-    --ring: var(--indigo-500);
-    --switch-background: var(--slate-600);
-
-    --sidebar: var(--slate-800);
-    --sidebar-foreground: var(--slate-100);
-    --sidebar-primary: var(--indigo-500);
-    --sidebar-primary-foreground: #ffffff;
-    --sidebar-accent: var(--slate-700);
-    --sidebar-accent-foreground: var(--slate-100);
-    --sidebar-border: var(--slate-700);
     --sidebar-ring: var(--indigo-500);
 }
 
@@ -192,6 +157,7 @@
     ::-webkit-scrollbar-thumb:hover {
         background: var(--slate-400);
     }
+
 
     /* Selection color */
     ::selection {

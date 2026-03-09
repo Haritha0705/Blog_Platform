@@ -58,10 +58,10 @@ export function DashboardPage({ setCurrentPage }: DashboardPageProps) {
   const totalLikes = backendPosts.reduce((acc: number, p: { likesCount: number }) => acc + (p.likesCount || 0), 0);
 
   const dashStats = [
-    { label: 'Total Views', value: totalViews > 1000 ? `${(totalViews / 1000).toFixed(1)}K` : String(totalViews), change: '+12.5%', icon: Visibility, color: '#6366F1', bg: 'rgba(99,102,241,0.08)' },
-    { label: 'Published Posts', value: String(publishedCount), change: `+${publishedCount}`, icon: FilePresent, color: '#F97316', bg: 'rgba(249,115,22,0.08)' },
-    { label: 'Total Comments', value: String(totalComments), change: `+${totalComments}`, icon: Comment, color: '#10B981', bg: 'rgba(16,185,129,0.08)' },
-    { label: 'Total Likes', value: totalLikes > 1000 ? `${(totalLikes / 1000).toFixed(1)}K` : String(totalLikes), change: `+${totalLikes}`, icon: Favorite, color: '#EF4444', bg: 'rgba(239,68,68,0.08)' },
+    { label: 'Total Views', value: totalViews > 1000 ? `${(totalViews / 1000).toFixed(1)}K` : String(totalViews), change: totalViews > 0 ? `${totalViews}` : '0', icon: Visibility, color: '#6366F1', bg: 'rgba(99,102,241,0.08)' },
+    { label: 'Published Posts', value: String(publishedCount), change: `${publishedCount}`, icon: FilePresent, color: '#F97316', bg: 'rgba(249,115,22,0.08)' },
+    { label: 'Total Comments', value: String(totalComments), change: `${totalComments}`, icon: Comment, color: '#10B981', bg: 'rgba(16,185,129,0.08)' },
+    { label: 'Total Likes', value: totalLikes > 1000 ? `${(totalLikes / 1000).toFixed(1)}K` : String(totalLikes), change: `${totalLikes}`, icon: Favorite, color: '#EF4444', bg: 'rgba(239,68,68,0.08)' },
   ];
 
   const recentPosts = backendPosts.length > 0
@@ -80,7 +80,7 @@ export function DashboardPage({ setCurrentPage }: DashboardPageProps) {
     <Box
       minHeight="100vh"
       sx={{
-        background: 'linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)',
+        background: (theme) => theme.palette.mode === 'dark' ? 'linear-gradient(180deg, #0F172A 0%, #1E293B 100%)' : 'linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%)',
       }}
     >
       <Container maxWidth="lg" sx={{ py: { xs: 4, md: 6 } }}>

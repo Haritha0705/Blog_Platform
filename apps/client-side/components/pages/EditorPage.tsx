@@ -30,11 +30,12 @@ import {
   Send,
   Close,
 } from '@mui/icons-material';
-import {useEffect, useState, useMemo} from "react";
+import {useEffect, useState, useMemo, useRef} from "react";
 import { useMutation } from '@apollo/client/react';
 import { CREATE_POST } from '@/lib/graphql/operations';
 import { useAuth } from '@/lib/auth-context';
 import { toast } from 'sonner';
+import { uploadImage } from '@/lib/upload';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyData = any;
@@ -53,7 +54,29 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
   const [tagInput, setTagInput] = useState('');
   const [slug, setSlug] = useState('');
   const [excerpt, setExcerpt] = useState('');
+  const [thumbnail, setThumbnail] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be under 5MB');
+      return;
+    }
+    setUploadingImage(true);
+    try {
+      const result = await uploadImage(file, 'thumbnails');
+      setThumbnail(result.url);
+      toast.success('Thumbnail uploaded!');
+    } catch {
+      toast.error('Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const wordCount = useMemo(() => {
     return content.trim().split(/\s+/).filter(Boolean).length;
@@ -84,6 +107,7 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
             title,
             content,
             slug: slug || undefined,
+            thumbnail: thumbnail || undefined,
             published: false,
             authorId: user.id,
             tags: tags.length > 0 ? tags : undefined,
@@ -113,6 +137,7 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
             title,
             content,
             slug: slug || undefined,
+            thumbnail: thumbnail || undefined,
             published: true,
             authorId: user.id,
             tags: tags.length > 0 ? tags : undefined,
@@ -291,19 +316,72 @@ export function EditorPage({ setCurrentPage }: EditorPageProps) {
                   <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                     Featured Image
                   </Typography>
-                  <Box
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    accept="image/jpeg,image/png,image/gif,image/webp"
+                    style={{ display: 'none' }}
+                    onChange={handleThumbnailUpload}
+                  />
+                  {thumbnail ? (
+                    <Box position="relative" borderRadius={2} overflow="hidden">
+                      <Box
+                        component="img"
+                        src={thumbnail}
+                        alt="Thumbnail"
+                        sx={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 2 }}
+                      />
+                      <Stack direction="row" spacing={1} mt={1}>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          fullWidth
+                          onClick={() => fileInputRef.current?.click()}
+                          sx={{ textTransform: 'none', borderRadius: '8px', fontSize: '0.75rem' }}
+                        >
+                          Change
+                        </Button>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          color="error"
+                          fullWidth
+                          onClick={() => setThumbnail('')}
+                          sx={{ textTransform: 'none', borderRadius: '8px', fontSize: '0.75rem' }}
+                        >
+                          Remove
+                        </Button>
+                      </Stack>
+                    </Box>
+                  ) : (
+                    <Box
                       border="2px dashed"
                       borderColor="divider"
                       borderRadius={2}
                       p={4}
                       textAlign="center"
-                      sx={{ cursor: 'pointer' }}
-                  >
-                    <ImageIcon color="disabled" fontSize="large" />
-                    <Typography variant="body2" color="text.secondary">
-                      Click to upload image
-                    </Typography>
-                  </Box>
+                      sx={{ cursor: 'pointer', '&:hover': { borderColor: 'primary.main', bgcolor: 'rgba(99,102,241,0.02)' }, transition: 'all 0.2s' }}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {uploadingImage ? (
+                        <>
+                          <Typography variant="body2" color="primary.main" fontWeight={600}>
+                            Uploading...
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <ImageIcon color="disabled" fontSize="large" />
+                          <Typography variant="body2" color="text.secondary">
+                            Click to upload image
+                          </Typography>
+                          <Typography variant="caption" color="text.disabled">
+                            JPEG, PNG, GIF, WebP • Max 5MB
+                          </Typography>
+                        </>
+                      )}
+                    </Box>
+                  )}
                 </CardContent>
               </Card>
 

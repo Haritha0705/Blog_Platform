@@ -26,11 +26,12 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import PublicOutlinedIcon from '@mui/icons-material/Public';
-import {useState} from "react";
+import {useState, useRef} from "react";
 import { useAuth } from '@/lib/auth-context';
 import { useMutation } from '@apollo/client/react';
 import { UPDATE_USER } from '@/lib/graphql/operations';
 import { toast } from 'sonner';
+import { uploadImage } from '@/lib/upload';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyData = any;
@@ -47,6 +48,31 @@ export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
   const [tab, setTab] = useState(0);
   const [name, setName] = useState(user?.name || '');
   const [bio, setBio] = useState(user?.bio || '');
+  const [avatarUrl, setAvatarUrl] = useState(user?.avatar || '');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be under 5MB');
+      return;
+    }
+    setUploadingAvatar(true);
+    try {
+      const result = await uploadImage(file, 'avatars');
+      setAvatarUrl(result.url);
+      if (user) {
+        await updateUser({ variables: { updateUserInput: { id: user.id, avatar: result.url } } });
+      }
+      toast.success('Avatar updated!');
+    } catch {
+      toast.error('Failed to upload avatar');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -124,15 +150,25 @@ export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
                 <Typography fontWeight={700} mb={2} fontSize="0.95rem">
                   Profile Picture
                 </Typography>
-
+                <input
+                  type="file"
+                  ref={avatarInputRef}
+                  accept="image/jpeg,image/png,image/gif,image/webp"
+                  style={{ display: 'none' }}
+                  onChange={handleAvatarUpload}
+                />
                 <Stack direction="row" spacing={3} alignItems="center">
-                  <Avatar sx={{ width: 96, height: 96, border: '3px solid', borderColor: (theme) => alpha(theme.palette.primary.main, 0.2) }}>
-                    <Image
-                      src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=200"
-                      alt="Profile"
-                      fill
-                      style={{ objectFit: 'cover' }}
-                    />
+                  <Avatar sx={{ width: 96, height: 96, border: '3px solid', borderColor: (theme) => alpha(theme.palette.primary.main, 0.2), fontSize: 36, bgcolor: 'primary.main' }}>
+                    {avatarUrl ? (
+                      <Image
+                        src={avatarUrl}
+                        alt="Profile"
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
+                    ) : (
+                      user?.name?.charAt(0)?.toUpperCase() || 'U'
+                    )}
                   </Avatar>
 
                   <Stack spacing={1}>
@@ -140,12 +176,14 @@ export default function SettingsPage({ setCurrentPage }: SettingsPageProps) {
                       variant="outlined"
                       startIcon={<PhotoCameraOutlinedIcon />}
                       size="small"
+                      disabled={uploadingAvatar}
+                      onClick={() => avatarInputRef.current?.click()}
                       sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}
                     >
-                      Change Avatar
+                      {uploadingAvatar ? 'Uploading...' : 'Change Avatar'}
                     </Button>
                     <Typography variant="caption" color="text.disabled">
-                      JPG, PNG or GIF. Max 2MB.
+                      JPG, PNG, GIF or WebP. Max 5MB.
                     </Typography>
                   </Stack>
                 </Stack>

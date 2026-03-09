@@ -58,11 +58,11 @@ export default function HomePage({ setCurrentPage, setSelectedPost }: HomePagePr
 
   const backendPosts: PostItem[] =
     data?.posts?.map(
-      (p: { id: number; title: string; content: string; thumbnail?: string; author?: { name: string }; createdAt: string }) => ({
+      (p: { id: number; title: string; content: string; thumbnail?: string; author?: { name: string }; tags?: { name: string }[]; createdAt: string }) => ({
         id: String(p.id),
         title: p.title,
         excerpt: p.content.substring(0, 120) + '...',
-        category: 'Technology',
+        category: p.tags?.[0]?.name || 'Technology',
         author: p.author?.name || 'Unknown',
         date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
         readTime: `${Math.ceil(p.content.split(' ').length / 200)} min`,
@@ -95,7 +95,10 @@ export default function HomePage({ setCurrentPage, setSelectedPost }: HomePagePr
           py: { xs: 10, md: 14 },
           position: 'relative',
           overflow: 'hidden',
-          background: 'linear-gradient(160deg, #F5F3FF 0%, #EEF2FF 30%, #ffffff 70%)',
+          background: (theme) =>
+            theme.palette.mode === 'dark'
+              ? 'linear-gradient(160deg, #1E1B4B 0%, #0F172A 30%, #1E293B 70%)'
+              : 'linear-gradient(160deg, #F5F3FF 0%, #EEF2FF 30%, #ffffff 70%)',
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -343,7 +346,7 @@ export default function HomePage({ setCurrentPage, setSelectedPost }: HomePagePr
       </Container>
 
       {/* ─── POPULAR & CATEGORIES ─── */}
-      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: '#F8FAFC' }}>
+      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(15,23,42,0.5)' : '#F8FAFC' }}>
         <Container maxWidth="lg">
           <Box display="grid" gridTemplateColumns={{ xs: '1fr', lg: '1fr 1fr' }} gap={6}>
             <Box>

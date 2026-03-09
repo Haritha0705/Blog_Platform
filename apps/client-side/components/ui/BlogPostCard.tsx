@@ -10,11 +10,14 @@ import {
     Chip,
     Stack,
     Box,
+    Avatar,
     alpha,
 } from '@mui/material';
 import {
     CalendarMonth,
     AccessTime,
+    FavoriteBorder,
+    ChatBubbleOutline,
 } from '@mui/icons-material';
 
 const MotionCard = motion(Card);
@@ -26,9 +29,13 @@ interface BlogPostCardProps {
         excerpt: string;
         category: string;
         author: string;
+        authorAvatar?: string;
         date: string;
         readTime: string;
         image: string;
+        likes?: number;
+        comments?: number;
+        views?: number;
     };
     onClick: (id: string) => void;
 }
@@ -127,7 +134,7 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
                     color="text.secondary"
                     sx={{
                         display: '-webkit-box',
-                        WebkitLineClamp: 3,
+                        WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
                         mb: 2,
@@ -140,6 +147,20 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
                 {/* Push footer to bottom */}
                 <Box sx={{ flexGrow: 1 }} />
 
+                {/* Author row */}
+                <Stack direction="row" spacing={1} alignItems="center" mb={2}>
+                    <Avatar sx={{ width: 24, height: 24, fontSize: 11, bgcolor: 'primary.main' }}>
+                        {post.authorAvatar ? (
+                            <Image src={post.authorAvatar} alt={post.author} fill style={{ objectFit: 'cover' }} />
+                        ) : (
+                            post.author?.charAt(0)?.toUpperCase() || 'U'
+                        )}
+                    </Avatar>
+                    <Typography variant="caption" fontWeight={600} color="text.primary">
+                        {post.author}
+                    </Typography>
+                </Stack>
+
                 {/* Footer */}
                 <Stack
                     direction="row"
@@ -151,20 +172,30 @@ export function BlogPostCard({ post, onClick }: BlogPostCardProps) {
                         borderColor: (theme) => alpha(theme.palette.divider, 0.6),
                     }}
                 >
-                    <Typography variant="caption" fontWeight={600} color="text.primary">
-                        {post.author}
-                    </Typography>
-
-                    <Stack direction="row" spacing={2} sx={{ color: 'text.secondary' }}>
+                    <Stack direction="row" spacing={1.5} sx={{ color: 'text.secondary' }}>
                         <Stack direction="row" spacing={0.5} alignItems="center">
                             <CalendarMonth sx={{ fontSize: 13 }} />
                             <Typography variant="caption">{post.date}</Typography>
                         </Stack>
-
                         <Stack direction="row" spacing={0.5} alignItems="center">
                             <AccessTime sx={{ fontSize: 13 }} />
                             <Typography variant="caption">{post.readTime}</Typography>
                         </Stack>
+                    </Stack>
+
+                    <Stack direction="row" spacing={1} sx={{ color: 'text.disabled' }}>
+                        {post.likes !== undefined && (
+                            <Stack direction="row" spacing={0.3} alignItems="center">
+                                <FavoriteBorder sx={{ fontSize: 13 }} />
+                                <Typography variant="caption">{post.likes}</Typography>
+                            </Stack>
+                        )}
+                        {post.comments !== undefined && (
+                            <Stack direction="row" spacing={0.3} alignItems="center">
+                                <ChatBubbleOutline sx={{ fontSize: 13 }} />
+                                <Typography variant="caption">{post.comments}</Typography>
+                            </Stack>
+                        )}
                     </Stack>
                 </Stack>
             </CardContent>

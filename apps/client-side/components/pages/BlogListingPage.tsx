@@ -12,7 +12,7 @@ import {
   Stack,
   Select,
   MenuItem,
-  CircularProgress,
+  Skeleton,
   alpha,
 } from '@mui/material';
 
@@ -27,7 +27,7 @@ import { blogPosts } from '@/data/content';
 import { useState } from 'react';
 import { BlogPostCard } from '@/components/ui/BlogPostCard';
 import { useQuery } from '@apollo/client/react';
-import { GET_POSTS } from '@/lib/graphql/operations';
+import { GET_FILTERED_POSTS, GET_TAGS } from '@/lib/graphql/operations';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyData = any;
@@ -44,13 +44,19 @@ export function BlogListingPage({
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [sort, setSort] = useState('latest');
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  const { data, loading } = useQuery<AnyData>(GET_POSTS);
+  const sortByMap: Record<string, string> = { latest: 'latest', popular: 'popular', oldest: 'oldest' };
+  const { data, loading } = useQuery<AnyData>(GET_FILTERED_POSTS, {
+    variables: { tag: selectedTag || undefined, sortBy: sortByMap[sort] || undefined, limit: 20 },
+  });
+  const { data: tagsData } = useQuery<AnyData>(GET_TAGS);
 
   const LayoutComponent = viewMode === 'grid' ? Box : Stack;
 
   const categories = ['All', 'Technology', 'Development', 'Design', 'Writing', 'Performance'];
-  const tags = ['React', 'TypeScript', 'CSS', 'Next.js', 'Design Systems', 'Performance', 'API'];
+  const backendTags: string[] = tagsData?.tags?.map((t: { name: string }) => t.name) || [];
+  const tags = backendTags.length > 0 ? backendTags : ['React', 'TypeScript', 'CSS', 'Next.js', 'Design Systems', 'Performance', 'API'];
 
   const handlePostClick = (postId: string) => {
     setSelectedPost?.(postId);
@@ -58,16 +64,19 @@ export function BlogListingPage({
   };
 
   // Merge backend posts with static fallback
-  const backendPosts = data?.posts?.map((p: { id: number; title: string; content: string; thumbnail?: string; views: number; author?: { name: string; avatar?: string }; createdAt: string }) => ({
+  const backendPosts = data?.filteredPosts?.map((p: { id: number; title: string; content: string; thumbnail?: string; views: number; likesCount: number; commentsCount: number; tags?: { name: string }[]; author?: { name: string; avatar?: string }; createdAt: string }) => ({
     id: String(p.id),
     title: p.title,
     excerpt: p.content.substring(0, 150) + '...',
-    category: 'Technology',
+    category: p.tags?.[0]?.name || 'Technology',
     author: p.author?.name || 'Unknown',
     authorAvatar: p.author?.avatar || '',
     date: new Date(p.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
     readTime: `${Math.ceil(p.content.split(' ').length / 200)} min`,
     image: p.thumbnail || 'https://images.unsplash.com/photo-1622131815183-e7f8bbac9cd6?w=600',
+    likes: p.likesCount || 0,
+    comments: p.commentsCount || 0,
+    views: p.views || 0,
   })) || [];
 
   const allPosts = backendPosts.length > 0 ? backendPosts : blogPosts;
@@ -77,7 +86,7 @@ export function BlogListingPage({
   );
 
   return (
-      <Box minHeight="100vh" sx={{ background: 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)' }}>
+      <Box minHeight="100vh" sx={{ background: (theme) => theme.palette.mode === 'dark' ? 'linear-gradient(180deg, #0F172A 0%, #1E293B 100%)' : 'linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%)' }}>
         <Container maxWidth="lg" sx={{ py: 6 }}>
           <Stack direction={{ xs: 'column', lg: 'row' }} spacing={6}>
             {/* ================= MAIN ================= */}
@@ -168,10 +177,24 @@ export function BlogListingPage({
                 </Stack>
               </Stack>
 
-              {/* Loading */}
+              {/* Loading Skeletons */}
               {loading && (
-                <Box display="flex" justifyContent="center" py={6}>
-                  <CircularProgress />
+                <Box display="grid" gridTemplateColumns={{ xs: '1fr', md: '1fr 1fr' }} gap={4} mb={6}>
+                  {[1, 2, 3, 4].map((i) => (
+                    <Card key={i} sx={{ borderRadius: '16px', border: '1px solid', borderColor: 'divider', boxShadow: 'none', overflow: 'hidden' }}>
+                      <Skeleton variant="rectangular" height={200} animation="wave" />
+                      <Box p={3}>
+                        <Skeleton variant="text" width="25%" height={24} />
+                        <Skeleton variant="text" width="90%" height={30} sx={{ mt: 1 }} />
+                        <Skeleton variant="text" width="100%" height={20} sx={{ mt: 1 }} />
+                        <Skeleton variant="text" width="60%" height={20} />
+                        <Stack direction="row" justifyContent="space-between" mt={2}>
+                          <Skeleton variant="text" width="30%" height={18} />
+                          <Skeleton variant="text" width="20%" height={18} />
+                        </Stack>
+                      </Box>
+                    </Card>
+                  ))}
                 </Box>
               )}
 
@@ -254,8 +277,9 @@ export function BlogListingPage({
                         <Chip
                           key={tag}
                           label={tag}
-                          variant="outlined"
+                          variant={selectedTag === tag ? 'filled' : 'outlined'}
                           clickable
+                          onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
                           sx={{
                             borderRadius: '8px',
                             fontWeight: 500,

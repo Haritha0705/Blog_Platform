@@ -17,51 +17,31 @@ import MyPostsPage from '@/components/pages/MyPostsPage';
 import SettingsPage from '@/components/pages/SettingsPage';
 import { AuthorPage } from '@/components/pages/AuthorPage';
 import SearchResultsPage from '@/components/pages/SearchResultsPage';
+import BookmarksPage from '@/components/pages/BookmarksPage';
+
+const theme = createTheme({
+    palette: {
+        mode: 'light',
+        primary: { main: '#6366F1' },
+        secondary: { main: '#F97316' },
+        background: { default: '#F8FAFC', paper: '#FFFFFF' },
+    },
+    typography: {
+        fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+    },
+    shape: { borderRadius: 12 },
+    components: {
+        MuiCard: { defaultProps: { elevation: 0 } },
+        MuiButton: { styleOverrides: { root: { textTransform: 'none' as const, fontWeight: 600 } } },
+    },
+});
 
 function AppContent() {
     const [currentPage, setCurrentPage] = useState<string>('home');
     const [selectedPostId, setSelectedPostId] = useState<string>('');
+    const [selectedAuthorId, setSelectedAuthorId] = useState<number>(0);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const { isAuthenticated, logout } = useAuth();
-
-    // MUI Theme — light only
-    const theme = createTheme({
-        palette: {
-            mode: 'light',
-            primary: {
-                main: '#6366F1',
-            },
-            secondary: {
-                main: '#F97316',
-            },
-            background: {
-                default: '#F8FAFC',
-                paper: '#FFFFFF',
-            },
-        },
-        typography: {
-            fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-        },
-        shape: {
-            borderRadius: 12,
-        },
-        components: {
-            MuiCard: {
-                defaultProps: {
-                    elevation: 0,
-                },
-            },
-            MuiButton: {
-                styleOverrides: {
-                    root: {
-                        textTransform: 'none' as const,
-                        fontWeight: 600,
-                    },
-                },
-            },
-        },
-    });
-
 
     const handleSearch = (query: string) => {
         setSearchQuery(query);
@@ -75,9 +55,9 @@ function AppContent() {
             case 'blog':
                 return <BlogListingPage setCurrentPage={setCurrentPage} setSelectedPost={setSelectedPostId} />;
             case 'post':
-                return <SinglePostPage setCurrentPage={setCurrentPage} postId={selectedPostId} />;
+                return <SinglePostPage setCurrentPage={setCurrentPage} postId={selectedPostId} setSelectedAuthor={(id: number) => { setSelectedAuthorId(id); setCurrentPage('authors'); }} />;
             case 'authors':
-                return <AuthorPage setCurrentPage={setCurrentPage} setSelectedPost={setSelectedPostId} />;
+                return <AuthorPage setCurrentPage={setCurrentPage} setSelectedPost={setSelectedPostId} authorId={selectedAuthorId} />;
             case 'search':
                 return <SearchResultsPage setCurrentPage={setCurrentPage} setSelectedPost={setSelectedPostId} searchQuery={searchQuery} />;
             case 'login':
@@ -90,6 +70,8 @@ function AppContent() {
                 return isAuthenticated ? <MyPostsPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} />;
             case 'settings':
                 return isAuthenticated ? <SettingsPage setCurrentPage={setCurrentPage} /> : <LoginPage setCurrentPage={setCurrentPage} />;
+            case 'bookmarks':
+                return isAuthenticated ? <BookmarksPage setCurrentPage={setCurrentPage} setSelectedPost={setSelectedPostId} /> : <LoginPage setCurrentPage={setCurrentPage} />;
             default:
                 return <HomePage setCurrentPage={setCurrentPage} setSelectedPost={setSelectedPostId} />;
         }
@@ -134,4 +116,3 @@ export default function App() {
         </AuthProvider>
     );
 }
-

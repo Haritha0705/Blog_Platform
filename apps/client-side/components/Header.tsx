@@ -27,6 +27,7 @@ import {
   Logout as LogoutIcon,
   Settings as SettingsIcon,
   ArticleOutlined,
+  BookmarkBorderOutlined,
 } from '@mui/icons-material';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -223,6 +224,7 @@ export const Header: React.FC<HeaderProps> = ({
             </Box>
           </form>
 
+
           {/* Auth */}
           {isAuthenticated ? (
             <>
@@ -295,6 +297,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <MenuItem onClick={() => { setCurrentPage('my-posts'); handleUserMenuClose(); }} sx={{ py: 1.2, borderRadius: '8px', mx: 0.5, mb: 0.3 }}>
                   <ListItemIcon><ArticleOutlined fontSize="small" /></ListItemIcon>
                   <ListItemText primary="My Posts" slotProps={{ primary: { fontSize: '0.875rem', fontWeight: 500 } }} />
+                </MenuItem>
+                <MenuItem onClick={() => { setCurrentPage('bookmarks'); handleUserMenuClose(); }} sx={{ py: 1.2, borderRadius: '8px', mx: 0.5, mb: 0.3 }}>
+                  <ListItemIcon><BookmarkBorderOutlined fontSize="small" /></ListItemIcon>
+                  <ListItemText primary="Reading List" slotProps={{ primary: { fontSize: '0.875rem', fontWeight: 500 } }} />
                 </MenuItem>
                 <MenuItem onClick={() => { setCurrentPage('settings'); handleUserMenuClose(); }} sx={{ py: 1.2, borderRadius: '8px', mx: 0.5, mb: 0.3 }}>
                   <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
