@@ -1,3 +1,9 @@
+<div align="center">
+
+# BlogPlatform
+
+A production-grade, full-stack blogging platform built with a modern monorepo architecture. Designed for writers and readers — publish articles, engage with content through likes, comments, and bookmarks, follow authors, and manage your profile — all powered by a performant GraphQL API and a server-rendered React frontend.
+
 <p align="center">
   <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js&logoColor=white" alt="Next.js" />
   <img src="https://img.shields.io/badge/NestJS-11-E0234E?logo=nestjs&logoColor=white" alt="NestJS" />
@@ -9,11 +15,7 @@
   <img src="https://img.shields.io/badge/License-MIT-green" alt="MIT License" />
 </p>
 
-# BlogPlatform
-
-A production-grade, full-stack blogging platform built with a modern monorepo architecture. Designed for writers and readers — publish articles, engage with content through likes, comments, and bookmarks, follow authors, and manage your profile — all powered by a performant GraphQL API and a server-rendered React frontend.
-
-> **Monorepo** managed by [Turborepo](https://turbo.build/) · **Frontend**: Next.js 16 (App Router) · **Backend**: NestJS 11 + Apollo GraphQL · **Database**: PostgreSQL (Neon) via Prisma ORM · **Storage**: AWS S3
+</div>
 
 ---
 
